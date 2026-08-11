@@ -3,715 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스마트 학급 관리 시스템 - 통합 웹 대시보드</title>
-    <!-- Tailwind CSS -->
+    <title>스마트 학급 관리 시스템 - 진짜 실시간 관제</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Font (Pretendard) -->
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
-    <div id="root"></div>
+<body class="bg-gray-100 min-h-screen">
+    <div id="app" class="p-6 max-w-5xl mx-auto">
+        <!-- 상단 헤더 -->
+        <header class="bg-white p-6 rounded-xl shadow-md mb-6 flex justify-between items-center border-l-4 border-indigo-600">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">🏫 스마트 학급 실시간 관제 센터</h1>
+                <p class="text-sm text-gray-500 mt-1">서버 연결 상태: <span id="server-status" class="font-bold text-yellow-600">연결 확인 중...</span></p>
+            </div>
+            <div id="user-info" class="hidden text-right">
+                <span id="user-display" class="font-bold text-indigo-600 text-lg"></span>
+                <button onclick="logout()" class="ml-4 text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded-lg transition">로그아웃</button>
+            </div>
+        </header>
 
-    <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
-
-        // 5단계 권한 이름 정의
-        const ROLE_NAMES = {
-            1: { name: '학교장 (최고관리자)', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
-            2: { name: '담임교사', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-            3: { name: '교과교사', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-            4: { name: '선도부/반장', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
-            5: { name: '학생', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' }
-        };
-
-        function App() {
-            // 서버 설정 및 상태
-            const [serverUrl, setServerUrl] = useState(localStorage.getItem('render_url') || 'https://rfid-service.onrender.com');
-            const [isEditingUrl, setIsEditingUrl] = useState(false);
-            const [serverStatus, setServerStatus] = useState('checking'); // 'online', 'offline', 'checking'
-            
-            // 인증 상태
-            const [user, setUser] = useState(null);
-            const [loginId, setLoginId] = useState('admin');
-            const [loginPw, setLoginPw] = useState('1234');
-            const [loginError, setLoginError] = useState('');
-
-            // 대시보드 데이터 상태
-            const [activeTab, setActiveTab] = useState('heartbeat'); // 'heartbeat', 'penalty', 'students', 'logs'
-            const [students, setStudents] = useState([
-                { id: 's1', name: '강감찬', status: 'online', lastHeartbeat: new Date().toISOString(), penaltyTotal: 2 },
-                { id: 's2', name: '김유신', status: 'offline', lastHeartbeat: new Date(Date.now() - 120000).toISOString(), penaltyTotal: 5 },
-                { id: 's3', name: '세종대왕', status: 'online', lastHeartbeat: new Date().toISOString(), penaltyTotal: 0 },
-                { id: 's4', name: '이순신', status: 'online', lastHeartbeat: new Date().toISOString(), penaltyTotal: 1 }
-            ]);
-            const [logs, setLogs] = useState([]);
-            
-            // 벌점 입력 폼
-            const [selectedStudent, setSelectedStudent] = useState('s1');
-            const [penaltyPoints, setPenaltyPoints] = useState(1);
-            const [penaltyReason, setPenaltyReason] = useState('수업 지각');
-            const [toast, setToast] = useState(null);
-
-            // 알림 토스트 표시
-            const showToast = (message, type = 'info') => {
-                setToast({ message, type });
-                setTimeout(() => setToast(null), 3000);
-            };
-
-            // 서버 상태 체크
-            const checkServerHealth = useCallback(async () => {
-                if (!serverUrl) return;
-                try {
-                    const res = await fetch(serverUrl, { method: 'GET' });
-                    if (res.ok) {
-                        setServerStatus('online');
-                    } else {
-                        setServerStatus('offline');
-                    }
-                } catch (err) {
-                    setServerStatus('offline');
-                }
-            }, [serverUrl]);
-
-            useEffect(() => {
-                checkServerHealth();
-                const interval = setInterval(checkServerHealth, 10000);
-                return () => clearInterval(interval);
-            }, [checkServerHealth]);
-
-            // 로그인 처리
-            const handleLogin = async (e) => {
-                e.preventDefault();
-                setLoginError('');
-
-                try {
-                    const res = await fetch(`${serverUrl}/api/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: loginId, pw: loginPw })
-                    });
-                    const data = await res.json();
-
-                    if (data.success) {
-                        setUser(data.user);
-                        showToast(`${data.user.name}님 환영합니다!`, 'success');
-                        addLog(`[로그인 성공] ${data.user.name} (${ROLE_NAMES[data.user.role]?.name})`);
-                    } else {
-                        setLoginError(data.message || '로그인에 실패했습니다.');
-                    }
-                } catch (err) {
-                    // 서버 오프라인시 데모 로그인 허용
-                    if (loginId === 'admin' && loginPw === '1234') {
-                        setUser({ name: '학교장 (오프라인 모드)', role: 1 });
-                        showToast('오프라인 데모 모드로 로그인했습니다.', 'warning');
-                    } else if (loginId === 'teacher' && loginPw === '1234') {
-                        setUser({ name: '담임교사 (오프라인 모드)', role: 2 });
-                        showToast('오프라인 데모 모드로 로그인했습니다.', 'warning');
-                    } else {
-                        setLoginError('서버 연결 실패 및 계정 정보를 확인할 수 없습니다.');
-                    }
-                }
-            };
-
-            // 로그 추가
-            const addLog = (msg) => {
-                const time = new Date().toLocaleTimeString();
-                setLogs(prev => [{ time, message: msg }, ...prev.slice(0, 49)]);
-            };
-
-            // 벌점 부여 제출
-            const handlePenaltySubmit = async (e) => {
-                e.preventDefault();
-                const student = students.find(s => s.id === selectedStudent);
-                
-                try {
-                    const res = await fetch(`${serverUrl}/api/penalty`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            studentId: selectedStudent,
-                            points: Number(penaltyPoints),
-                            reason: penaltyReason
-                        })
-                    });
-                    const data = await res.json();
-                    
-                    if (data.success) {
-                        showToast(data.message, 'success');
-                        addLog(`[벌점 부여] ${student?.name || selectedStudent} - ${penaltyPoints}점 (${penaltyReason})`);
-                    }
-                } catch (err) {
-                    // 데모 상태 처리
-                    showToast(`[데모] ${student?.name} 학생에게 벌점 ${penaltyPoints}점 부여 완료`, 'success');
-                    addLog(`[벌점 부여-데모] ${student?.name} - ${penaltyPoints}점 (${penaltyReason})`);
-                }
-
-                // 로컬 학생 점수 업데이트
-                setStudents(prev => prev.map(s => {
-                    if (s.id === selectedStudent) {
-                        return { ...s, penaltyTotal: s.penaltyTotal + Number(penaltyPoints) };
-                    }
-                    return s;
-                }));
-            };
-
-            // 학생 삭제 처리
-            const handleDeleteStudent = async (id, name) => {
-                if (!confirm(`${name} 학생 데이터를 정말 삭제하시겠습니까?`)) return;
-
-                try {
-                    const res = await fetch(`${serverUrl}/api/student/${id}`, { method: 'DELETE' });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast(`${name} 학생이 삭제되었습니다.`, 'info');
-                    }
-                } catch (err) {
-                    showToast(`[데모] ${name} 학생 삭제 완료`, 'info');
-                }
-
-                setStudents(prev => prev.filter(s => s.id !== id));
-                addLog(`[학생 삭제] ${name} (${id}) 정보가 삭제됨`);
-            };
-
-            // 하트비트 시뮬레이션 테스트
-            const triggerHeartbeat = async (studentId) => {
-                try {
-                    await fetch(`${serverUrl}/api/heartbeat`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: studentId })
-                    });
-                } catch(e) {}
-
-                setStudents(prev => prev.map(s => {
-                    if (s.id === studentId) {
-                        return { ...s, status: 'online', lastHeartbeat: new Date().toISOString() };
-                    }
-                    return s;
-                }));
-                const student = students.find(s => s.id === studentId);
-                showToast(`${student?.name} 학생 생존 신호(Heartbeat) 수신!`, 'success');
-                addLog(`[하트비트 수신] ${student?.name} 학생 스마트폰 정상 응답`);
-            };
-
-            return (
-                <div class="min-h-screen flex flex-col">
-                    {/* 상단 네비게이션 헤더 */}
-                    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
-                                <i class="fa-solid fa-graduation-cap"></i>
-                            </div>
-                            <div>
-                                <h1 class="font-bold text-lg text-slate-100 flex items-center gap-2">
-                                    스마트 학급 관리 시스템
-                                    <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">v2.0 Web Admin</span>
-                                </h1>
-                                <p class="text-xs text-slate-400">실시간 통신 감시 & 5단계 권한제 어드민</p>
-                            </div>
-                        </div>
-
-                        {/* Render 서버 URL 설정바 */}
-                        <div class="flex items-center gap-3 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class={`w-2.5 h-2.5 rounded-full ${serverStatus === 'online' ? 'bg-emerald-500 animate-pulse' : serverStatus === 'offline' ? 'bg-rose-500' : 'bg-amber-500'}`}></span>
-                                <span class="text-slate-400">서버:</span>
-                            </div>
-                            
-                            {isEditingUrl ? (
-                                <div class="flex items-center gap-1">
-                                    <input 
-                                        type="text" 
-                                        value={serverUrl} 
-                                        onChange={(e) => setServerUrl(e.target.value)}
-                                        class="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-slate-200 focus:outline-none w-64"
-                                    />
-                                    <button 
-                                        onClick={() => {
-                                            localStorage.setItem('render_url', serverUrl);
-                                            setIsEditingUrl(false);
-                                            checkServerHealth();
-                                        }}
-                                        class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded transition"
-                                    >
-                                        저장
-                                    </button>
-                                </div>
-                            ) : (
-                                <div class="flex items-center gap-2">
-                                    <span class="font-mono text-slate-300 max-w-[200px] truncate">{serverUrl}</span>
-                                    <button onClick={() => setIsEditingUrl(true)} class="text-slate-400 hover:text-white transition">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 로그인 유저 프로필 및 로그아웃 */}
-                        {user && (
-                            <div class="flex items-center gap-4">
-                                <div class="text-right">
-                                    <div class="text-sm font-semibold text-slate-200">{user.name}</div>
-                                    <span class={`text-[10px] px-2 py-0.5 rounded border ${ROLE_NAMES[user.role]?.color}`}>
-                                        {ROLE_NAMES[user.role]?.name}
-                                    </span>
-                                </div>
-                                <button 
-                                    onClick={() => setUser(null)} 
-                                    class="p-2 rounded-lg bg-slate-700/50 hover:bg-rose-600/20 hover:text-rose-400 text-slate-400 transition"
-                                    title="로그아웃"
-                                >
-                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                </button>
-                            </div>
-                        )}
-                    </header>
-
-                    {/* 알림 토스트 */}
-                    {toast && (
-                        <div class={`fixed top-20 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl border backdrop-blur text-sm flex items-center gap-3 animate-bounce ${
-                            toast.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200' :
-                            toast.type === 'warning' ? 'bg-amber-950/90 border-amber-500/50 text-amber-200' :
-                            'bg-slate-800/90 border-slate-600 text-slate-200'
-                        }`}>
-                            <i class={`fa-solid ${toast.type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-amber-400'}`}></i>
-                            <span>{toast.message}</span>
-                        </div>
-                    )}
-
-                    {/* 메인 콘텐츠 영역 */}
-                    <main class="flex-grow p-6 max-w-7xl w-full mx-auto">
-                        {!user ? (
-                            /* 로그인 화면 */
-                            <div class="max-w-md mx-auto my-12 bg-slate-800/60 border border-slate-700/80 rounded-2xl p-8 shadow-2xl backdrop-blur">
-                                <div class="text-center mb-8">
-                                    <div class="w-16 h-16 bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3">
-                                        <i class="fa-solid fa-lock"></i>
-                                    </div>
-                                    <h2 class="text-2xl font-bold text-slate-100">통합 관리자 로그인</h2>
-                                    <p class="text-xs text-slate-400 mt-1">부여받은 교사/관리자 계정으로 접속해 주세요.</p>
-                                </div>
-
-                                {loginError && (
-                                    <div class="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                                        <i class="fa-solid fa-triangle-exclamation"></i>
-                                        <span>{loginError}</span>
-                                    </div>
-                                )}
-
-                                <form onSubmit={handleLogin} class="space-y-4">
-                                    <div>
-                                        <label class="block text-xs font-medium text-slate-400 mb-1">아이디</label>
-                                        <input 
-                                            type="text" 
-                                            value={loginId} 
-                                            onChange={e => setLoginId(e.target.value)} 
-                                            class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 transition text-sm"
-                                            placeholder="아이디 입력"
-                                            required 
-                                        />
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-slate-400 mb-1">비밀번호</label>
-                                        <input 
-                                            type="password" 
-                                            value={loginPw} 
-                                            onChange={e => setLoginPw(e.target.value)} 
-                                            class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 transition text-sm"
-                                            placeholder="비밀번호 입력"
-                                            required 
-                                        />
-                                    </div>
-                                    <button 
-                                        type="submit" 
-                                        class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow-lg shadow-indigo-600/30 transition duration-200 text-sm mt-2"
-                                    >
-                                        로그인
-                                    </button>
-                                </form>
-
-                                {/* 빠른 테스트 로그인 프리셋 */}
-                                <div class="mt-8 pt-6 border-t border-slate-700/60">
-                                    <p class="text-xs text-slate-500 mb-3 text-center">빠른 계정 테스트 (프리셋)</p>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <button 
-                                            onClick={() => { setLoginId('admin'); setLoginPw('1234'); }}
-                                            class="p-2 rounded-lg bg-slate-700/30 hover:bg-slate-700/60 border border-slate-700 text-left text-xs transition"
-                                        >
-                                            <div class="font-semibold text-purple-300">학교장 (Admin)</div>
-                                            <div class="text-[10px] text-slate-400">ID: admin / PW: 1234</div>
-                                        </button>
-                                        <button 
-                                            onClick={() => { setLoginId('teacher'); setLoginPw('1234'); }}
-                                            class="p-2 rounded-lg bg-slate-700/30 hover:bg-slate-700/60 border border-slate-700 text-left text-xs transition"
-                                        >
-                                            <div class="font-semibold text-blue-300">담임교사 (Teacher)</div>
-                                            <div class="text-[10px] text-slate-400">ID: teacher / PW: 1234</div>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            /* 대시보드 메인 화면 */
-                            <div class="space-y-6">
-                                {/* 주요 현황 요약 카드리스트 */}
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                    <div class="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl backdrop-blur flex items-center justify-between">
-                                        <div>
-                                            <p class="text-xs text-slate-400 font-medium">전체 등록 학생</p>
-                                            <p class="text-2xl font-bold text-slate-100 mt-1">{students.length}명</p>
-                                        </div>
-                                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xl">
-                                            <i class="fa-solid fa-users"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl backdrop-blur flex items-center justify-between">
-                                        <div>
-                                            <p class="text-xs text-slate-400 font-medium">앱 연결 정상 (Online)</p>
-                                            <p class="text-2xl font-bold text-emerald-400 mt-1">
-                                                {students.filter(s => s.status === 'online').length}명
-                                            </p>
-                                        </div>
-                                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
-                                            <i class="fa-solid fa-wifi"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl backdrop-blur flex items-center justify-between">
-                                        <div>
-                                            <p class="text-xs text-slate-400 font-medium">앱 삭제/통신끊김 (경고)</p>
-                                            <p class="text-2xl font-bold text-rose-400 mt-1">
-                                                {students.filter(s => s.status === 'offline').length}명
-                                            </p>
-                                        </div>
-                                        <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
-                                            <i class="fa-solid fa-triangle-exclamation"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl backdrop-blur flex items-center justify-between">
-                                        <div>
-                                            <p class="text-xs text-slate-400 font-medium">오늘 부여된 총 벌점</p>
-                                            <p class="text-2xl font-bold text-amber-400 mt-1">
-                                                {students.reduce((acc, curr) => acc + curr.penaltyTotal, 0)}점
-                                            </p>
-                                        </div>
-                                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
-                                            <i class="fa-solid fa-circle-minus"></i>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* 대시보드 탭 네비게이션 */}
-                                <div class="flex border-b border-slate-700/80 gap-2">
-                                    <button 
-                                        onClick={() => setActiveTab('heartbeat')}
-                                        class={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-2 ${
-                                            activeTab === 'heartbeat' 
-                                            ? 'border-indigo-500 text-indigo-400' 
-                                            : 'border-transparent text-slate-400 hover:text-slate-200'
-                                        }`}
-                                    >
-                                        <i class="fa-solid fa-[#000] fa-heart-pulse"></i>
-                                        실시간 생존신호(Heartbeat) 감시
-                                    </button>
-                                    <button 
-                                        onClick={() => setActiveTab('penalty')}
-                                        class={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-2 ${
-                                            activeTab === 'penalty' 
-                                            ? 'border-indigo-500 text-indigo-400' 
-                                            : 'border-transparent text-slate-400 hover:text-slate-200'
-                                        }`}
-                                    >
-                                        <i class="fa-solid fa-pen-ruler"></i>
-                                        벌점 부여 & 관리
-                                    </button>
-                                    <button 
-                                        onClick={() => setActiveTab('students')}
-                                        class={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-2 ${
-                                            activeTab === 'students' 
-                                            ? 'border-indigo-500 text-indigo-400' 
-                                            : 'border-transparent text-slate-400 hover:text-slate-200'
-                                        }`}
-                                    >
-                                        <i class="fa-solid fa-user-gear"></i>
-                                        학생 명단 & 삭제 관리
-                                    </button>
-                                    <button 
-                                        onClick={() => setActiveTab('logs')}
-                                        class={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-2 ${
-                                            activeTab === 'logs' 
-                                            ? 'border-indigo-500 text-indigo-400' 
-                                            : 'border-transparent text-slate-400 hover:text-slate-200'
-                                        }`}
-                                    >
-                                        <i class="fa-solid fa-list-check"></i>
-                                        시스템 실시간 로그 ({logs.length})
-                                    </button>
-                                </div>
-
-                                {/* 탭 1: 하트비트 감시 */}
-                                {activeTab === 'heartbeat' && (
-                                    <div class="space-y-4">
-                                        <div class="flex justify-between items-center">
-                                            <h3 class="text-lg font-bold text-slate-200">학생 스마트폰 통신 상태 현황</h3>
-                                            <span class="text-xs text-slate-400">※ 1분 간 생존 신호가 없으면 자동 경고 상태로 전환됩니다.</span>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {students.map(student => (
-                                                <div 
-                                                    key={student.id} 
-                                                    class={`p-5 rounded-2xl border transition backdrop-blur flex justify-between items-center ${
-                                                        student.status === 'online' 
-                                                        ? 'bg-slate-800/40 border-slate-700/60' 
-                                                        : 'bg-rose-950/20 border-rose-500/40'
-                                                    }`}
-                                                >
-                                                    <div class="flex items-center gap-4">
-                                                        <div class={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold ${
-                                                            student.status === 'online' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                                                        }`}>
-                                                            {student.name[0]}
-                                                        </div>
-                                                        <div>
-                                                            <div class="flex items-center gap-2">
-                                                                <h4 class="font-bold text-slate-100">{student.name}</h4>
-                                                                <span class="text-xs text-slate-500">({student.id})</span>
-                                                            </div>
-                                                            <p class="text-xs text-slate-400 mt-0.5">
-                                                                마지막 수신: {new Date(student.lastHeartbeat).toLocaleTimeString()}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="flex items-center gap-3">
-                                                        {student.status === 'online' ? (
-                                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
-                                                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                                                정상 연결중
-                                                            </span>
-                                                        ) : (
-                                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1.5">
-                                                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                                                앱 삭제 / 끊김
-                                                            </span>
-                                                        )}
-
-                                                        <button 
-                                                            onClick={() => triggerHeartbeat(student.id)}
-                                                            class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded-lg transition"
-                                                            title="하트비트 신호 강제 전송 시뮬레이션"
-                                                        >
-                                                            신호 전송
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* 탭 2: 벌점 부여 */}
-                                {activeTab === 'penalty' && (
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {/* 벌점 입력 폼 */}
-                                        <div class="md:col-span-1 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl backdrop-blur">
-                                            <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
-                                                <i class="fa-solid fa-circle-minus text-amber-400"></i>
-                                                벌점 부여하기
-                                            </h3>
-
-                                            <form onSubmit={handlePenaltySubmit} class="space-y-4">
-                                                <div>
-                                                    <label class="block text-xs font-medium text-slate-400 mb-1">학생 선택</label>
-                                                    <select 
-                                                        value={selectedStudent} 
-                                                        onChange={e => setSelectedStudent(e.target.value)}
-                                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
-                                                    >
-                                                        {students.map(s => (
-                                                            <option key={s.id} value={s.id}>{s.name} ({s.id}) - 현재 {s.penaltyTotal}점</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-
-                                                <div>
-                                                    <label class="block text-xs font-medium text-slate-400 mb-1">부여 벌점</label>
-                                                    <input 
-                                                        type="number" 
-                                                        min="1" 
-                                                        max="10" 
-                                                        value={penaltyPoints} 
-                                                        onChange={e => setPenaltyPoints(e.target.value)}
-                                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label class="block text-xs font-medium text-slate-400 mb-1">사유</label>
-                                                    <select 
-                                                        value={penaltyReason} 
-                                                        onChange={e => setPenaltyReason(e.target.value)}
-                                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
-                                                    >
-                                                        <option value="수업 지각">수업 지각 (1점)</option>
-                                                        <option value="스마트폰 미제출">스마트폰 미제출 (2점)</option>
-                                                        <option value="수업 태도 불량">수업 태도 불량 (1점)</option>
-                                                        <option value="무단 외출">무단 외출 (3점)</option>
-                                                        <option value="기타 규정 위반">기타 규정 위반 (1점)</option>
-                                                    </select>
-                                                </div>
-
-                                                <button 
-                                                    type="submit"
-                                                    class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-medium text-sm rounded-lg shadow-lg shadow-amber-600/20 transition mt-2"
-                                                >
-                                                    벌점 부여 확정
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        {/* 학생별 누적 벌점 목록 */}
-                                        <div class="md:col-span-2 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl backdrop-blur">
-                                            <h3 class="text-lg font-bold text-slate-200 mb-4">학생별 누적 벌점 리스트</h3>
-                                            <div class="space-y-3">
-                                                {students.map(student => (
-                                                    <div key={student.id} class="flex items-center justify-between p-3.5 bg-slate-900/60 border border-slate-700/40 rounded-xl">
-                                                        <div class="flex items-center gap-3">
-                                                            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center font-bold text-slate-300 text-xs">
-                                                                {student.name[0]}
-                                                            </div>
-                                                            <div>
-                                                                <span class="font-bold text-slate-200 text-sm">{student.name}</span>
-                                                                <span class="text-xs text-slate-500 ml-2">ID: {student.id}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-center gap-3">
-                                                            <div class="text-right">
-                                                                <span class="text-xs text-slate-400">누적: </span>
-                                                                <span class={`font-bold ${student.penaltyTotal > 3 ? 'text-rose-400' : 'text-amber-300'}`}>
-                                                                    {student.penaltyTotal}점
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* 탭 3: 학생 정보 및 삭제 관리 */}
-                                {activeTab === 'students' && (
-                                    <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl backdrop-blur">
-                                        <div class="flex justify-between items-center mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-bold text-slate-200">학생 데이터베이스 관리</h3>
-                                                <p class="text-xs text-slate-400">학생 정보 삭제는 권한(학교장/담임교사) 승인 하에 처리됩니다.</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="overflow-x-auto">
-                                            <table class="w-full text-left border-collapse">
-                                                <thead>
-                                                    <tr class="border-b border-slate-700/80 text-xs text-slate-400 font-medium">
-                                                        <th class="py-3 px-4">식별 ID</th>
-                                                        <th class="py-3 px-4">이름</th>
-                                                        <th class="py-3 px-4">앱 상태</th>
-                                                        <th class="py-3 px-4">누적 벌점</th>
-                                                        <th class="py-3 px-4 text-right">관리 작업</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-slate-700/50 text-sm">
-                                                    {students.map(student => (
-                                                        <tr key={student.id} class="hover:bg-slate-700/20 transition">
-                                                            <td class="py-3 px-4 font-mono text-slate-300">{student.id}</td>
-                                                            <td class="py-3 px-4 font-bold text-slate-100">{student.name}</td>
-                                                            <td class="py-3 px-4">
-                                                                <span class={`text-xs px-2 py-0.5 rounded ${student.status === 'online' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
-                                                                    {student.status}
-                                                                </span>
-                                                            </td>
-                                                            <td class="py-3 px-4 font-semibold text-amber-300">{student.penaltyTotal}점</td>
-                                                            <td class="py-3 px-4 text-right">
-                                                                {user.role <= 2 ? (
-                                                                    <button 
-                                                                        onClick={() => handleDeleteStudent(student.id, student.name)}
-                                                                        class="px-3 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs rounded transition"
-                                                                    >
-                                                                        학생 정보 삭제
-                                                                    </button>
-                                                                ) : (
-                                                                    <span class="text-xs text-slate-500">권한 없음</span>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* 탭 4: 실시간 시스템 로그 */}
-                                {activeTab === 'logs' && (
-                                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 font-mono text-xs">
-                                        <div class="flex justify-between items-center mb-4">
-                                            <h3 class="text-slate-300 font-bold flex items-center gap-2">
-                                                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
-                                                서버 통신 이력 & 경고 로그
-                                            </h3>
-                                            <button 
-                                                onClick={() => setLogs([])} 
-                                                class="text-slate-500 hover:text-slate-300 transition"
-                                            >
-                                                로그 지우기
-                                            </button>
-                                        </div>
-
-                                        <div class="space-y-2 max-h-96 overflow-y-auto custom-scrollbar pr-2">
-                                            {logs.length === 0 ? (
-                                                <p class="text-slate-600 italic">수신된 로그가 없습니다.</p>
-                                            ) : (
-                                                logs.map((log, i) => (
-                                                    <div key={i} class="flex items-start gap-3 text-slate-300 hover:bg-slate-800/40 p-1 rounded">
-                                                        <span class="text-slate-500 shrink-0">[{log.time}]</span>
-                                                        <span class={log.message.includes('경고') || log.message.includes('삭제') ? 'text-rose-400 font-semibold' : 'text-slate-300'}>
-                                                            {log.message}
-                                                        </span>
-                                                    </div>
-                                                ))
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </main>
-
-                    <footer class="bg-slate-950 border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
-                        스마트 학급 관리 시스템 ⓒ 2026. Render Cloud Server Sync & React Admin Dashboard Integrated.
-                    </footer>
+        <!-- 로그인 폼 -->
+        <div id="login-section" class="bg-white p-8 rounded-xl shadow-md max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-4 text-center text-gray-700">관리자/교사 로그인</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">아이디</label>
+                    <input type="text" id="login-id" value="admin" class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
                 </div>
-            );
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">비밀번호</label>
+                    <input type="password" id="login-pw" value="1234" class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">서버 접속하기</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden"></p>
+        </div>
+
+        <!-- 대시보드 화면 (로그인 후 표시) -->
+        <div id="dashboard-section" class="hidden space-y-6">
+            <!-- 안내 노티 -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-blue-700 text-sm">
+                💡 <strong>실시간 연동 중:</strong> 아래 표는 3초마다 Render 백엔드 서버(`GET /api/students`)에서 직접 데이터를 가져와 갱신됩니다.
+            </div>
+
+            <!-- 학생 데이터 리스트 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-5 border-b flex justify-between items-center bg-gray-50">
+                    <h2 class="text-lg font-bold text-gray-700">학생 통신 상태 및 벌점 관리</h2>
+                    <button onclick="fetchStudents()" class="text-sm bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-200">🔄 지금 새로고침</button>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 text-sm">
+                            <th class="p-4">ID</th>
+                            <th class="p-4">이름</th>
+                            <th class="p-4">통신 상태 (Heartbeat)</th>
+                            <th class="p-4">현재 벌점</th>
+                            <th class="p-4 text-center">제어 / 관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body">
+                        <!-- 서버에서 불러온 진짜 데이터가 여기 들어감 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let fetchInterval = null;
+
+        // 페이지 로드 시 서버가 켜져있는지 바로 확인
+        async function checkServer() {
+            try {
+                const res = await fetch('/');
+                const data = await res.json();
+                document.getElementById('server-status').innerText = '🟢 온라인 (정상 작동 중)';
+                document.getElementById('server-status').className = 'font-bold text-green-600';
+            } catch (err) {
+                document.getElementById('server-status').innerText = '🔴 서버 응답 없음';
+                document.getElementById('server-status').className = 'font-bold text-red-600';
+            }
+        }
+        checkServer();
+
+        // 진짜 로그인 요청 (POST /api/login)
+        async function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('login-id').value;
+            const pw = document.getElementById('login-pw').value;
+            const errEl = document.getElementById('login-error');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, pw })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('dashboard-section').classList.remove('hidden');
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('user-display').innerText = `${data.user.name} 님`;
+                    
+                    // 로그인 성공 시 서버에서 실시간 학생 데이터 주기적으로 가져오기 시작
+                    fetchStudents();
+                    fetchInterval = setInterval(fetchStudents, 3000);
+                } else {
+                    errEl.innerText = data.message;
+                    errEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                errEl.innerText = '서버와 통신할 수 없습니다.';
+                errEl.classList.remove('hidden');
+            }
         }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        // 진짜 학생 데이터 가져오기 (GET /api/students)
+        async function fetchStudents() {
+            try {
+                const res = await fetch('/api/students');
+                const students = await res.json();
+                const tbody = document.getElementById('student-table-body');
+                tbody.innerHTML = '';
+
+                if (students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400">등록되거나 신호를 보낸 학생이 없습니다.</td></tr>';
+                    return;
+                }
+
+                students.forEach(s => {
+                    const isOnline = s.status === 'online';
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b hover:bg-gray-50';
+                    tr.innerHTML = `
+                        <td class="p-4 font-mono text-sm">${s.id}</td>
+                        <td class="p-4 font-bold text-gray-800">${s.name}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isOnline ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${isOnline ? '🟢 연결됨' : '🚨 끊김 (앱 삭제)'}
+                            </span>
+                        </td>
+                        <td class="p-4 font-bold ${s.penalty > 0 ? 'text-red-600' : 'text-gray-600'}">${s.penalty || 0} 점</td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="givePenalty('${s.id}')" class="bg-amber-500 text-white text-xs px-2.5 py-1.5 rounded hover:bg-amber-600">벌점 부여</button>
+                            <button onclick="deleteStudent('${s.id}')" class="bg-red-500 text-white text-xs px-2.5 py-1.5 rounded hover:bg-red-600">삭제</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error('학생 데이터 수신 실패:', err);
+            }
+        }
+
+        // 진짜 벌점 부여 (POST /api/penalty)
+        async function givePenalty(studentId) {
+            const points = prompt('부여할 벌점을 입력하세요:', '1');
+            if (!points || isNaN(points)) return;
+
+            const res = await fetch('/api/penalty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentId, points: Number(points), reason: '관제센터 직접 부여' })
+            });
+            const data = await res.json();
+            alert(data.message);
+            fetchStudents(); // 부여 후 데이터 즉시 새로고침
+        }
+
+        // 진짜 학생 삭제 (DELETE /api/student/:id)
+        async function deleteStudent(studentId) {
+            if (!confirm('정말 이 학생 데이터를 서버에서 삭제하시겠습니까?')) return;
+
+            const res = await fetch(`/api/student/${studentId}`, { method: 'DELETE' });
+            const data = await res.json();
+            alert(data.message);
+            fetchStudents(); // 삭제 후 데이터 즉시 새로고침
+        }
+
+        function logout() {
+            clearInterval(fetchInterval);
+            location.reload();
+        }
     </script>
 </body>
 </html>
