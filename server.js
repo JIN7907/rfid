@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
+const path = require('path'); // [추가] 경로 처리를 위한 기본 모듈
 
 const app = express();
 const server = http.createServer(app);
@@ -10,13 +11,19 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================================
-// 1. 기본 웹 접속 확인 (Cannot GET / 에러 해결)
+// 1. 기본 웹 접속 및 /admin 라우트
 // ==========================================
+// 기본 서버 상태 확인
 app.get('/', (req, res) => {
     res.status(200).json({
         status: "ONLINE",
         message: "스마트 학급 관리 시스템 통합 서버 작동 중"
     });
+});
+
+// [추가] 홈페이지/admin 접속 시 admin.html 띄우기
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // ==========================================
