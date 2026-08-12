@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스마트 교실 출결 및 관제 시스템</title>
+    <title>스마트 학교 통합 관제 센터</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>tailwind.config = { darkMode: 'class' }</script>
@@ -25,49 +25,112 @@
         </div>
     </div>
 
-    <!-- 대시보드 화면 -->
-    <div id="dashboard-container" class="hidden p-6 max-w-[1400px] mx-auto space-y-4">
+    <!-- 대시보드 메인 화면 -->
+    <div id="dashboard-container" class="hidden p-6 max-w-[1500px] mx-auto space-y-6">
         
         <!-- 상단 헤더 & 네비게이션 제어부 -->
         <header class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
-                <h1 id="dashboard-title" class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-indigo-400"></i> 스마트 학급 관제 시스템</h1>
+                <h1 id="dashboard-title" class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-school-flag text-indigo-400"></i> 스마트 학교 통합 관제 센터</h1>
                 <p id="user-role-badge" class="text-sm text-indigo-300 mt-1 font-semibold">사용자 권한</p>
             </div>
             
-            <!-- 계층형 학급 선택기 (학년 -> 반) -->
+            <!-- 계층형 학급 선택기 (ALL / 학년 -> 반) -->
             <div id="navigation-bar" class="flex flex-col md:items-end gap-3">
-                <!-- JS에서 권한별로 학년/반 버튼이 동적으로 렌더링 됩니다 -->
+                <!-- JS에서 동적 생성됨 -->
             </div>
         </header>
 
-        <!-- 메인 콘텐츠 영역 (좌측: 교실 좌석배치도 / 우측: 상세 명렬표) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 1️⃣ [ALL - 전교생 총괄 뷰] 선택 시 나타나는 비상관제 및 교사 관제 패널 -->
+        <div id="total-view-panel" class="hidden space-y-6">
             
-            <!-- ⬅️ 좌측: 교실 좌석 배치도 (2열 차지) -->
+            <!-- 전교 미출석/조퇴/병가 학생 긴급 집계 현황 -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                    <h2 class="text-lg font-bold text-rose-400 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> 전교 미출석 / 조퇴 / 병가 학생 종합 명단
+                    </h2>
+                    <span id="total-absent-badge" class="text-xs bg-rose-500/20 text-rose-300 font-bold px-3 py-1 rounded-full border border-rose-500/30">
+                        총 0명 미출석
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">소속 (학년-반)</th>
+                                <th class="p-3">학생 이름 (좌석)</th>
+                                <th class="p-3">미출석 상태 및 사유</th>
+                                <th class="p-3">담당 담임 교사</th>
+                                <th class="p-3 text-center">비고 / 사유 입력</th>
+                            </tr>
+                        </thead>
+                        <tbody id="total-absent-table-body" class="divide-y divide-slate-700/50">
+                            <!-- JS 동적 생성 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 선생님 교시별 수업 입실/출결 관제 시스템 -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                    <h2 class="text-lg font-bold text-indigo-400 flex items-center gap-2">
+                        <i class="fa-solid fa-user-check"></i> 선생님 교시별 수업 입실 / 출결 관제
+                    </h2>
+                    <span class="text-xs bg-indigo-500/20 text-indigo-300 font-bold px-3 py-1 rounded-full">
+                        실시간 수업 체크 중
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">교시</th>
+                                <th class="p-3">대상 학급</th>
+                                <th class="p-3">과목</th>
+                                <th class="p-3">담당 선생님</th>
+                                <th class="p-3">수업 입실 상태</th>
+                                <th class="p-3">입실 시간</th>
+                                <th class="p-3 text-center">출결 체크 제어</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-session-table-body" class="divide-y divide-slate-700/50">
+                            <!-- JS 동적 생성 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 2️⃣ [개별 학급 교실 뷰] 선택 시 나타나는 좌석배치도 및 우측 명렬표 -->
+        <div id="class-view-panel" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- ⬅️ 좌측: 교실 좌석 배치도 (2열) -->
             <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg flex flex-col">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-3">
                     <h2 class="font-bold text-lg text-white" id="room-title">1학년 1반 교실 좌석표</h2>
-                    <span class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full"><i class="fa-solid fa-satellite-dish"></i> 실시간 출결 연동 중</span>
+                    <span class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full"><i class="fa-solid fa-satellite-dish"></i> 실시간 연동 중</span>
                 </div>
                 
-                <!-- 교탁 -->
                 <div class="w-full flex justify-center mb-8">
                     <div class="bg-slate-700 text-slate-300 px-12 py-3 rounded-lg font-bold text-sm shadow-md border-b-4 border-slate-600">
                         👨‍🏫 교 탁 (앞)
                     </div>
                 </div>
 
-                <!-- 5x5 책상 그리드 렌더링 -->
                 <div id="seating-chart" class="seat-grid w-full max-w-3xl mx-auto flex-1">
                     <!-- JS 동적 생성 -->
                 </div>
             </div>
 
-            <!-- ➡️ 우측: 선택 학급 우측 명렬표 리스트 -->
+            <!-- ➡️ 우측: 학급 명렬표 -->
             <div class="bg-slate-800 border border-slate-700 rounded-xl flex flex-col shadow-lg overflow-hidden h-[800px]">
                 <div class="p-4 border-b border-slate-700 bg-slate-900/50 flex justify-between items-center">
-                    <h3 class="font-bold text-white"><i class="fa-solid fa-list text-indigo-400"></i> 학급 명렬표 및 제어</h3>
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-list text-indigo-400"></i> 학급 명렬표</h3>
                     <span id="class-stats" class="text-xs font-bold bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded">총 0명</span>
                 </div>
                 <div class="flex-1 overflow-y-auto">
@@ -76,6 +139,7 @@
                             <tr>
                                 <th class="p-3">번호</th>
                                 <th class="p-3">이름</th>
+                                <th class="p-3">담임 교사</th>
                                 <th class="p-3">상태/사유</th>
                                 <th class="p-3 text-center">관리</th>
                             </tr>
@@ -88,16 +152,18 @@
             </div>
 
         </div>
+
     </div>
 
     <script>
         let studentsData = [];
+        let teacherSessionsData = [];
         let currentUser = null;
         
-        // 마스터 및 교과교사를 위한 현재 열람 중인 학년/반 상태 저장
+        let viewMode = 'TOTAL'; // 'TOTAL' (전교 총괄) 또는 'CLASS' (개별 교실)
         let viewGrade = 1; 
         let viewClass = 1;
-        const totalSeats = 25; // 5x5 배치도 규격
+        const totalSeats = 25;
 
         async function handleLogin(e) {
             e.preventDefault();
@@ -112,85 +178,164 @@
                 
                 if (data.success) {
                     currentUser = data.user;
-                    // 권한에 따른 초기 뷰 설정
-                    if (currentUser.grade) viewGrade = currentUser.grade;
-                    if (currentUser.classNum) viewClass = currentUser.classNum;
+                    if (currentUser.grade) { viewGrade = currentUser.grade; viewMode = 'CLASS'; }
+                    if (currentUser.classNum) { viewClass = currentUser.classNum; viewMode = 'CLASS'; }
 
                     setupDashboard();
                     document.getElementById('login-container').classList.add('hidden');
                     document.getElementById('dashboard-container').classList.remove('hidden');
                     
-                    fetchStudents();
-                    setInterval(fetchStudents, 3000);
+                    refreshAllData();
+                    setInterval(refreshAllData, 3000);
                 } else alert('로그인 실패');
             } catch (err) { alert('서버 연결 오류'); }
         }
 
-        // 권한별 네비게이션 및 타이틀 설정
         function setupDashboard() {
-            const roleBadge = document.getElementById('user-role-badge');
-            roleBadge.innerText = `${currentUser.name} 접속 중`;
+            document.getElementById('user-role-badge').innerText = `${currentUser.name} 접속 중`;
             renderNavigation();
         }
 
-        // 상단 계층형 메뉴 (학년 선택 -> 반 선택)
+        // 상단 계층형 네비게이션
         function renderNavigation() {
             const nav = document.getElementById('navigation-bar');
             nav.innerHTML = '';
 
-            // 1. 학년 선택 버튼 (교장, 교과교사만 보임)
-            if (['PRINCIPAL', 'SUBJECT'].includes(currentUser.role)) {
-                let gradeHtml = '<div class="flex gap-2">';
-                [1, 2, 3].forEach(g => {
-                    const active = g === viewGrade ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
-                    gradeHtml += `<button onclick="changeGrade(${g})" class="px-5 py-2 rounded-lg text-sm font-bold transition ${active}">${g}학년</button>`;
-                });
-                gradeHtml += '</div>';
-                nav.innerHTML += gradeHtml;
+            let html = '<div class="flex flex-wrap gap-2 items-center">';
+
+            // 1. 전교생 총괄 ALL 버튼 (교장, 학년부장 지원)
+            if (['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role)) {
+                const isAllActive = viewMode === 'TOTAL' ? 'bg-rose-600 text-white shadow-lg font-extrabold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
+                html += `<button onclick="switchToTotalView()" class="px-5 py-2 rounded-lg text-sm transition ${isAllActive}"><i class="fa-solid fa-eye"></i> ALL (전교생 총괄)</button>`;
             }
 
-            // 2. 반 선택 버튼 (교장, 학년부장, 교과교사만 보임)
-            if (['PRINCIPAL', 'GRADE_HEAD', 'SUBJECT'].includes(currentUser.role)) {
-                let classHtml = '<div class="flex gap-2">';
+            // 2. 학년 선택 버튼
+            if (['PRINCIPAL', 'SUBJECT'].includes(currentUser.role)) {
+                [1, 2, 3].forEach(g => {
+                    const active = (viewMode === 'CLASS' && g === viewGrade) ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
+                    html += `<button onclick="changeGrade(${g})" class="px-4 py-2 rounded-lg text-sm font-bold transition ${active}">${g}학년</button>`;
+                });
+            }
+
+            html += '</div>';
+
+            // 3. 반 선택 버튼 (개별 학급 모드일 때만 보임)
+            if (viewMode === 'CLASS' && ['PRINCIPAL', 'GRADE_HEAD', 'SUBJECT'].includes(currentUser.role)) {
+                html += '<div class="flex gap-2 mt-1">';
                 [1, 2, 3, 4, 5].forEach(c => {
                     const active = c === viewClass ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
-                    classHtml += `<button onclick="changeClass(${c})" class="px-4 py-1.5 rounded-lg text-sm font-bold transition ${active}">${c}반</button>`;
+                    html += `<button onclick="changeClass(${c})" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${active}">${c}반</button>`;
                 });
-                classHtml += '</div>';
-                nav.innerHTML += classHtml;
+                html += '</div>';
+            }
+
+            nav.innerHTML = html;
+        }
+
+        function switchToTotalView() { viewMode = 'TOTAL'; renderNavigation(); renderMainView(); }
+        function changeGrade(g) { viewMode = 'CLASS'; viewGrade = g; viewClass = 1; renderNavigation(); renderMainView(); }
+        function changeClass(c) { viewMode = 'CLASS'; viewClass = c; renderNavigation(); renderMainView(); }
+
+        async function refreshAllData() {
+            try {
+                const [resStudents, resTeachers] = await Promise.all([
+                    fetch('/api/students'),
+                    fetch('/api/teachers/sessions')
+                ]);
+                studentsData = await resStudents.json();
+                teacherSessionsData = await resTeachers.json();
+                
+                renderMainView();
+            } catch (err) { console.error('데이터 수신 실패'); }
+        }
+
+        function renderMainView() {
+            const totalPanel = document.getElementById('total-view-panel');
+            const classPanel = document.getElementById('class-view-panel');
+
+            if (viewMode === 'TOTAL') {
+                totalPanel.classList.remove('hidden');
+                classPanel.classList.add('hidden');
+                renderTotalAbsentTable();
+                renderTeacherSessionTable();
+            } else {
+                totalPanel.classList.add('hidden');
+                classPanel.classList.remove('hidden');
+                renderClassView();
             }
         }
 
-        function changeGrade(g) { viewGrade = g; viewClass = 1; renderNavigation(); renderClassView(); }
-        function changeClass(c) { viewClass = c; renderNavigation(); renderClassView(); }
+        // 1️⃣ ALL 전교 미출석/조퇴/병가 학생 관제 표
+        function renderTotalAbsentTable() {
+            const tbody = document.getElementById('total-absent-table-body');
+            tbody.innerHTML = '';
 
-        async function fetchStudents() {
-            try {
-                const res = await fetch('/api/students');
-                studentsData = await res.json();
-                renderClassView();
-            } catch (err) { console.error('데이터 통신 오류'); }
+            const absents = studentsData.filter(s => s.status === 'offline');
+            document.getElementById('total-absent-badge').innerText = `총 ${absents.length}명 미출석/조퇴`;
+
+            if (absents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">전교생 모두 정상 출석 중입니다.</td></tr>`;
+                return;
+            }
+
+            absents.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/30 transition">
+                        <td class="p-3 font-bold text-indigo-400">${s.grade}학년 ${s.classNum}반</td>
+                        <td class="p-3 font-bold text-white">${s.name} <span class="text-xs text-slate-400 font-normal">(${s.seat}번)</span></td>
+                        <td class="p-3"><span class="text-xs bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-md font-bold">${s.reason || '결석(미등록)'}</span></td>
+                        <td class="p-3 text-slate-300 font-medium">${s.homeroomTeacher || '담임 미지정'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="inputReason('${s.id}')" class="text-xs bg-slate-700 px-3 py-1.5 rounded text-white hover:bg-slate-600">사유 입력</button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
-        // 좌측 좌석배치도 + 우측 리스트 그리기
+        // 2️⃣ ALL 선생님 교시별 수업 입실 관제 표
+        function renderTeacherSessionTable() {
+            const tbody = document.getElementById('teacher-session-table-body');
+            tbody.innerHTML = '';
+
+            teacherSessionsData.forEach(t => {
+                const isInClass = t.status === 'IN_CLASS';
+                const statusBadge = isInClass 
+                    ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded font-bold">🟢 수업 진행 중</span>`
+                    : `<span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded font-bold animate-pulse">🚨 미입실 / 지연</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/30 transition">
+                        <td class="p-3 font-bold text-slate-300">${t.period}</td>
+                        <td class="p-3 font-bold text-indigo-400">${t.grade}학년 ${t.classNum}반</td>
+                        <td class="p-3 font-bold text-white">${t.subject}</td>
+                        <td class="p-3 text-slate-200 font-medium">${t.teacherName}</td>
+                        <td class="p-3">${statusBadge}</td>
+                        <td class="p-3 text-slate-400 font-mono text-xs">${t.entryTime}</td>
+                        <td class="p-3 text-center space-x-2">
+                            <button onclick="toggleTeacherStatus('${t.id}', 'IN_CLASS')" class="text-xs bg-emerald-600/30 text-emerald-300 px-2 py-1 rounded hover:bg-emerald-600/50">입실 확인</button>
+                            <button onclick="toggleTeacherStatus('${t.id}', 'DELAYED')" class="text-xs bg-rose-600/30 text-rose-300 px-2 py-1 rounded hover:bg-rose-600/50">지연 처리</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 개별 학급 교실 뷰 렌더링
         function renderClassView() {
             document.getElementById('room-title').innerText = `${viewGrade}학년 ${viewClass}반 교실 좌석배치도`;
-            
-            // 현재 보고있는 학년/반의 학생만 필터링
             const classData = studentsData.filter(s => s.grade === viewGrade && s.classNum === viewClass);
             
             renderSeatingChart(classData);
             renderList(classData);
         }
 
-        // ⬅️ 책상(좌석표) 렌더링 로직
         function renderSeatingChart(classData) {
             const grid = document.getElementById('seating-chart');
             grid.innerHTML = '';
 
             for (let i = 1; i <= totalSeats; i++) {
                 const student = classData.find(s => s.seat === i);
-                
                 if (student) {
                     const isOnline = student.status === 'online';
                     const bgColor = isOnline ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-rose-500/10 border-rose-500/50';
@@ -217,7 +362,6 @@
             }
         }
 
-        // ➡️ 우측 명렬표 리스트 렌더링 로직
         function renderList(classData) {
             const tbody = document.getElementById('student-list-body');
             tbody.innerHTML = '';
@@ -225,38 +369,38 @@
             const onlineCount = classData.filter(s => s.status === 'online').length;
             document.getElementById('class-stats').innerText = `총 ${classData.length}명 / ${onlineCount}명 출석`;
 
-            // 번호(좌석) 순으로 정렬
             const sorted = [...classData].sort((a, b) => a.seat - b.seat);
 
             sorted.forEach(s => {
                 const isOnline = s.status === 'online';
-                const canEdit = ['PRINCIPAL', 'GRADE_HEAD', 'HOMEROOM'].includes(currentUser.role);
                 const statusBadge = isOnline 
-                    ? `<span class="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded font-bold">출석</span>` 
-                    : `<span class="text-xs text-rose-400 font-bold">${s.reason || '결석(미등록)'}</span>`;
+                    ? `<span class="text-xs text-emerald-400 font-bold">출석</span>` 
+                    : `<span class="text-xs text-rose-400 font-bold">${s.reason || '결석'}</span>`;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-700/30 transition">
                         <td class="p-3 text-slate-400 font-mono text-xs">${s.seat}번</td>
                         <td class="p-3 font-bold text-white">${s.name}</td>
+                        <td class="p-3 text-xs text-slate-300">${s.homeroomTeacher || '미지정'}</td>
                         <td class="p-3">${statusBadge}</td>
                         <td class="p-3 text-center">
-                            ${canEdit ? `<button onclick="inputReason('${s.id}')" class="text-[11px] bg-slate-700 px-2 py-1.5 rounded hover:bg-slate-600 text-white shadow">사유</button>` : '-'}
+                            <button onclick="inputReason('${s.id}')" class="text-[11px] bg-slate-700 px-2 py-1.5 rounded hover:bg-slate-600 text-white">사유</button>
                         </td>
                     </tr>
                 `;
             });
-            
-            if(sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">학생 데이터가 없습니다.</td></tr>`;
-            }
         }
 
         async function inputReason(studentId) {
-            const reason = prompt('해당 학생의 상태/결석 사유를 입력하세요 (예: 조퇴, 병가, 현장체험):');
+            const reason = prompt('학생의 결석/조퇴/병가 사유를 입력하세요:');
             if (reason === null) return;
             await fetch('/api/reason', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ studentId, reason }) });
-            fetchStudents();
+            refreshAllData();
+        }
+
+        async function toggleTeacherStatus(id, status) {
+            await fetch('/api/teachers/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) });
+            refreshAllData();
         }
     </script>
 </body>
