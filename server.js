@@ -12,14 +12,14 @@ app.use(express.json());
 // ==========================================
 // 1. 웹 접속 라우트
 // ==========================================
-app.get('/', (req, res) => res.status(200).json({ status: "ONLINE", message: "스마트 학급 및 교사 통합 관제 시스템 작동 중" }));
+app.get('/', (req, res) => res.status(200).json({ status: "ONLINE", message: "스마트 학교 통합 시스템 작동 중" }));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 // ==========================================
 // 2. 권한 및 사용자 계정 DB
 // ==========================================
 const ROLES = {
-    PRINCIPAL: 'PRINCIPAL',   // 교장 (전교생 및 교사 전체 관제)
+    PRINCIPAL: 'PRINCIPAL',   // 교장 (전교생 및 업무평가 다운로드 권한)
     GRADE_HEAD: 'GRADE_HEAD', // 학년부장
     HOMEROOM: 'HOMEROOM',     // 담임교사
     SUBJECT: 'SUBJECT'        // 교과교사
@@ -32,7 +32,7 @@ let users = [
     { id: 'subject1', pw: '1234', role: ROLES.SUBJECT, name: '교과교사' }
 ];
 
-// 학생 데이터 (담임 교사 정보 homeroomTeacher 추가)
+// 학생 데이터 (담임 교사 정보 포함)
 let students = [
     { id: 's1', seat: 1, name: '강감찬', grade: 1, classNum: 1, homeroomTeacher: '김선생', status: 'online', penalty: 0, reason: '', lastHeartbeat: Date.now() },
     { id: 's2', seat: 5, name: '김유신', grade: 1, classNum: 1, homeroomTeacher: '김선생', status: 'offline', penalty: 0, reason: '병가 (독감)', lastHeartbeat: Date.now() - 70000 },
@@ -42,12 +42,12 @@ let students = [
     { id: 's6', seat: 2, name: '유관순', grade: 3, classNum: 1, homeroomTeacher: '최선생', status: 'offline', penalty: 0, reason: '조퇴 (병원)', lastHeartbeat: Date.now() - 70000 }
 ];
 
-// 선생님 교시별 수업 입실/출결 데이터
-let teacherSessions = [
-    { id: 't1', period: '1교시', grade: 1, classNum: 1, subject: '국어', teacherName: '김국어 선생님', status: 'IN_CLASS', entryTime: '09:02' },
-    { id: 't2', period: '1교시', grade: 1, classNum: 2, subject: '수학', teacherName: '이수학 선생님', status: 'DELAYED', entryTime: '미입실' },
-    { id: 't3', period: '1교시', grade: 2, classNum: 1, subject: '영어', teacherName: '박영어 선생님', status: 'IN_CLASS', entryTime: '09:00' },
-    { id: 't4', period: '1교시', grade: 3, classNum: 1, subject: '과학', teacherName: '최과학 선생님', status: 'IN_CLASS', entryTime: '09:01' }
+// 💡 교직원 RFID 신분증 태그 누적 기록 (업무평가 다운로드용 샘플 데이터)
+let teacherRfidLogs = [
+    { id: 'l1', date: '2026-08-01', time: '08:58:12', teacherName: '김국어 선생님', subject: '국어', grade: 1, classNum: 1, cardId: 'RFID-T881', status: '정시입실' },
+    { id: 'l2', date: '2026-08-01', time: '09:04:30', teacherName: '이수학 선생님', subject: '수학', grade: 1, classNum: 2, cardId: 'RFID-T882', status: '지연입실(4분)' },
+    { id: 'l3', date: '2026-08-02', time: '08:59:00', teacherName: '박영어 선생님', subject: '영어', grade: 2, classNum: 1, cardId: 'RFID-T883', status: '정시입실' },
+    { id: 'l4', date: '2026-08-02', time: '08:57:40', teacherName: '최과학 선생님', subject: '과학', grade: 3, classNum: 1, cardId: 'RFID-T884', status: '정시입실' }
 ];
 
 // ==========================================
@@ -100,22 +100,33 @@ app.post('/api/heartbeat', (req, res) => {
     res.json({ success: true });
 });
 
-// 선생님 수업 입실 현황 조회 API
-app.get('/api/teachers/sessions', (req, res) => {
-    res.json(teacherSessions);
+// 💳 [RFID] 교직원 신분증 태그 수신 API (교실 입구 단말기에서 전달받음)
+app.post('/api/rfid/teacher-tag', (req, res) => {
+    const { teacherName, subject, grade, classNum, cardId } = req.body;
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
+
+    const newLog = {
+        id: 'l_' + Date.now(),
+        date: dateStr,
+        time: timeStr,
+        teacherName: teacherName || '교과 선생님',
+        subject: subject || '수업',
+        grade: Number(grade) || 1,
+        classNum: Number(classNum) || 1,
+        cardId: cardId || 'RFID-TEMP',
+        status: now.getMinutes() > 5 ? '지연입실' : '정시입실'
+    };
+
+    teacherRfidLogs.unshift(newLog); // 최신 기록을 맨 앞으로
+    res.json({ success: true, message: `${teacherName} 선생님 RFID 태그 기록 완료`, log: newLog });
 });
 
-// 선생님 입실 상태 수동 토글 API
-app.post('/api/teachers/check', (req, res) => {
-    const { id, status } = req.body;
-    const session = teacherSessions.find(t => t.id === id);
-    if (session) {
-        session.status = status;
-        session.entryTime = status === 'IN_CLASS' ? new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '미입실';
-        return res.json({ success: true });
-    }
-    res.status(404).json({ success: false });
+// 📊 월간 교사 수업입실 로그 조회 API
+app.get('/api/teachers/logs', (req, res) => {
+    res.json(teacherRfidLogs);
 });
 
 const PORT = process.env.PORT || 10000;
-server.listen(PORT, () => console.log(`🚀 학급 및 교사 통합 관제 서버 작동 중 (포트 ${PORT})`));
+server.listen(PORT, () => console.log(`🚀 포트 ${PORT} 작동 중`));

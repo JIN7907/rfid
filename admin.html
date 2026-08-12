@@ -35,16 +35,14 @@
                 <p id="user-role-badge" class="text-sm text-indigo-300 mt-1 font-semibold">사용자 권한</p>
             </div>
             
-            <!-- 계층형 학급 선택기 (ALL / 학년 -> 반) -->
+            <!-- 계층형 학급 선택기 & 평가표 다운로드 버튼 -->
             <div id="navigation-bar" class="flex flex-col md:items-end gap-3">
                 <!-- JS에서 동적 생성됨 -->
             </div>
         </header>
 
-        <!-- 1️⃣ [ALL - 전교생 총괄 뷰] 선택 시 나타나는 비상관제 및 교사 관제 패널 -->
+        <!-- 1️⃣ [ALL - 전교생 총괄 뷰] 전교 미출석/조퇴/병가 학생 종합 명단 -->
         <div id="total-view-panel" class="hidden space-y-6">
-            
-            <!-- 전교 미출석/조퇴/병가 학생 긴급 집계 현황 -->
             <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
                 <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
                     <h2 class="text-lg font-bold text-rose-400 flex items-center gap-2">
@@ -72,44 +70,10 @@
                     </table>
                 </div>
             </div>
-
-            <!-- 선생님 교시별 수업 입실/출결 관제 시스템 -->
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                    <h2 class="text-lg font-bold text-indigo-400 flex items-center gap-2">
-                        <i class="fa-solid fa-user-check"></i> 선생님 교시별 수업 입실 / 출결 관제
-                    </h2>
-                    <span class="text-xs bg-indigo-500/20 text-indigo-300 font-bold px-3 py-1 rounded-full">
-                        실시간 수업 체크 중
-                    </span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-900 text-slate-400 border-b border-slate-700">
-                            <tr>
-                                <th class="p-3">교시</th>
-                                <th class="p-3">대상 학급</th>
-                                <th class="p-3">과목</th>
-                                <th class="p-3">담당 선생님</th>
-                                <th class="p-3">수업 입실 상태</th>
-                                <th class="p-3">입실 시간</th>
-                                <th class="p-3 text-center">출결 체크 제어</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teacher-session-table-body" class="divide-y divide-slate-700/50">
-                            <!-- JS 동적 생성 -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
 
-        <!-- 2️⃣ [개별 학급 교실 뷰] 선택 시 나타나는 좌석배치도 및 우측 명렬표 -->
+        <!-- 2️⃣ [개별 학급 교실 뷰] 좌석배치도 및 우측 명렬표 -->
         <div id="class-view-panel" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- ⬅️ 좌측: 교실 좌석 배치도 (2열) -->
             <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg flex flex-col">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-3">
                     <h2 class="font-bold text-lg text-white" id="room-title">1학년 1반 교실 좌석표</h2>
@@ -127,7 +91,7 @@
                 </div>
             </div>
 
-            <!-- ➡️ 우측: 학급 명렬표 -->
+            <!-- 우측 명렬표 -->
             <div class="bg-slate-800 border border-slate-700 rounded-xl flex flex-col shadow-lg overflow-hidden h-[800px]">
                 <div class="p-4 border-b border-slate-700 bg-slate-900/50 flex justify-between items-center">
                     <h3 class="font-bold text-white"><i class="fa-solid fa-list text-indigo-400"></i> 학급 명렬표</h3>
@@ -150,17 +114,60 @@
                     </table>
                 </div>
             </div>
-
         </div>
 
     </div>
 
+    <!-- 📊 [모달] 월간 교사 수업입실 업무평가표 다운로드 창 -->
+    <div id="report-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-3xl shadow-2xl relative flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-csv text-emerald-400"></i> 교직원 RFID 태그 기반 월간 수업입실 평가표
+                </h3>
+                <button onclick="closeReportModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="flex justify-between items-center mb-3">
+                <p class="text-xs text-slate-400">교실 입구 RFID 신분증 태그 데이터가 수집된 기록입니다.</p>
+                <div class="flex gap-2">
+                    <button onclick="simulateTeacherRfidTag()" class="text-xs bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded hover:bg-indigo-600/50">
+                        💳 교사 RFID 태그 테스트
+                    </button>
+                    <button onclick="downloadTeacherReportCSV()" class="text-xs bg-emerald-600 text-white font-bold px-3 py-1.5 rounded shadow hover:bg-emerald-500 flex items-center gap-1">
+                        <i class="fa-solid fa-download"></i> 엑셀/CSV 다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 기록 표 -->
+            <div class="overflow-y-auto flex-1 border border-slate-700 rounded-lg">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 text-slate-300 sticky top-0 border-b border-slate-700">
+                        <tr>
+                            <th class="p-2.5">태그 날짜</th>
+                            <th class="p-2.5">입실 시간</th>
+                            <th class="p-2.5">선생님 이름</th>
+                            <th class="p-2.5">담당 과목</th>
+                            <th class="p-2.5">입실 교실</th>
+                            <th class="p-2.5">RFID 카드 ID</th>
+                            <th class="p-2.5">입실 결과</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-logs-body" class="divide-y divide-slate-700/50 text-slate-200">
+                        <!-- JS 동적 생성 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         let studentsData = [];
-        let teacherSessionsData = [];
+        let teacherLogsData = [];
         let currentUser = null;
         
-        let viewMode = 'TOTAL'; // 'TOTAL' (전교 총괄) 또는 'CLASS' (개별 교실)
+        let viewMode = 'TOTAL'; 
         let viewGrade = 1; 
         let viewClass = 1;
         const totalSeats = 25;
@@ -196,35 +203,39 @@
             renderNavigation();
         }
 
-        // 상단 계층형 네비게이션
         function renderNavigation() {
             const nav = document.getElementById('navigation-bar');
             nav.innerHTML = '';
 
             let html = '<div class="flex flex-wrap gap-2 items-center">';
 
-            // 1. 전교생 총괄 ALL 버튼 (교장, 학년부장 지원)
+            // 1. ALL 버튼
             if (['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role)) {
                 const isAllActive = viewMode === 'TOTAL' ? 'bg-rose-600 text-white shadow-lg font-extrabold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
-                html += `<button onclick="switchToTotalView()" class="px-5 py-2 rounded-lg text-sm transition ${isAllActive}"><i class="fa-solid fa-eye"></i> ALL (전교생 총괄)</button>`;
+                html += `<button onclick="switchToTotalView()" class="px-4 py-2 rounded-lg text-sm transition ${isAllActive}"><i class="fa-solid fa-eye"></i> ALL (전교생 총괄)</button>`;
             }
 
-            // 2. 학년 선택 버튼
+            // 2. 학년 버튼
             if (['PRINCIPAL', 'SUBJECT'].includes(currentUser.role)) {
                 [1, 2, 3].forEach(g => {
                     const active = (viewMode === 'CLASS' && g === viewGrade) ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
-                    html += `<button onclick="changeGrade(${g})" class="px-4 py-2 rounded-lg text-sm font-bold transition ${active}">${g}학년</button>`;
+                    html += `<button onclick="changeGrade(${g})" class="px-3.5 py-2 rounded-lg text-sm font-bold transition ${active}">${g}학년</button>`;
                 });
+            }
+
+            // 3. 📊 교사 수업입실 평가표 다운로드 버튼 (교장 및 주요 관리자)
+            if (['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role)) {
+                html += `<button onclick="openReportModal()" class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-500 shadow-md transition ml-2"><i class="fa-solid fa-file-excel"></i> 교사 입실 평가표 다운로드</button>`;
             }
 
             html += '</div>';
 
-            // 3. 반 선택 버튼 (개별 학급 모드일 때만 보임)
+            // 4. 반 버튼
             if (viewMode === 'CLASS' && ['PRINCIPAL', 'GRADE_HEAD', 'SUBJECT'].includes(currentUser.role)) {
                 html += '<div class="flex gap-2 mt-1">';
                 [1, 2, 3, 4, 5].forEach(c => {
                     const active = c === viewClass ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-700 text-slate-300 hover:bg-slate-600';
-                    html += `<button onclick="changeClass(${c})" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${active}">${c}반</button>`;
+                    html += `<button onclick="changeClass(${c})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${active}">${c}반</button>`;
                 });
                 html += '</div>';
             }
@@ -238,12 +249,12 @@
 
         async function refreshAllData() {
             try {
-                const [resStudents, resTeachers] = await Promise.all([
+                const [resStudents, resLogs] = await Promise.all([
                     fetch('/api/students'),
-                    fetch('/api/teachers/sessions')
+                    fetch('/api/teachers/logs')
                 ]);
                 studentsData = await resStudents.json();
-                teacherSessionsData = await resTeachers.json();
+                teacherLogsData = await resLogs.json();
                 
                 renderMainView();
             } catch (err) { console.error('데이터 수신 실패'); }
@@ -257,7 +268,6 @@
                 totalPanel.classList.remove('hidden');
                 classPanel.classList.add('hidden');
                 renderTotalAbsentTable();
-                renderTeacherSessionTable();
             } else {
                 totalPanel.classList.add('hidden');
                 classPanel.classList.remove('hidden');
@@ -265,7 +275,7 @@
             }
         }
 
-        // 1️⃣ ALL 전교 미출석/조퇴/병가 학생 관제 표
+        // ALL 전교 미출석 명단
         function renderTotalAbsentTable() {
             const tbody = document.getElementById('total-absent-table-body');
             tbody.innerHTML = '';
@@ -293,35 +303,6 @@
             });
         }
 
-        // 2️⃣ ALL 선생님 교시별 수업 입실 관제 표
-        function renderTeacherSessionTable() {
-            const tbody = document.getElementById('teacher-session-table-body');
-            tbody.innerHTML = '';
-
-            teacherSessionsData.forEach(t => {
-                const isInClass = t.status === 'IN_CLASS';
-                const statusBadge = isInClass 
-                    ? `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded font-bold">🟢 수업 진행 중</span>`
-                    : `<span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded font-bold animate-pulse">🚨 미입실 / 지연</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-700/30 transition">
-                        <td class="p-3 font-bold text-slate-300">${t.period}</td>
-                        <td class="p-3 font-bold text-indigo-400">${t.grade}학년 ${t.classNum}반</td>
-                        <td class="p-3 font-bold text-white">${t.subject}</td>
-                        <td class="p-3 text-slate-200 font-medium">${t.teacherName}</td>
-                        <td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-slate-400 font-mono text-xs">${t.entryTime}</td>
-                        <td class="p-3 text-center space-x-2">
-                            <button onclick="toggleTeacherStatus('${t.id}', 'IN_CLASS')" class="text-xs bg-emerald-600/30 text-emerald-300 px-2 py-1 rounded hover:bg-emerald-600/50">입실 확인</button>
-                            <button onclick="toggleTeacherStatus('${t.id}', 'DELAYED')" class="text-xs bg-rose-600/30 text-rose-300 px-2 py-1 rounded hover:bg-rose-600/50">지연 처리</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        // 개별 학급 교실 뷰 렌더링
         function renderClassView() {
             document.getElementById('room-title').innerText = `${viewGrade}학년 ${viewClass}반 교실 좌석배치도`;
             const classData = studentsData.filter(s => s.grade === viewGrade && s.classNum === viewClass);
@@ -345,7 +326,7 @@
                         : `<span class="text-rose-400 font-bold text-[10px] truncate w-full text-center px-1">${student.reason || '결석'}</span>`;
                     
                     grid.innerHTML += `
-                        <div class="flex flex-col items-center justify-center p-2 rounded-xl border-2 ${bgColor} aspect-square shadow-sm transition hover:scale-105 cursor-pointer">
+                        <div class="flex flex-col items-center justify-center p-2 rounded-xl border-2 ${bgColor} aspect-square shadow-sm hover:scale-105 cursor-pointer">
                             <span class="text-[10px] text-slate-400 mb-1">${student.seat}번</span>
                             <span class="font-black text-sm mb-1 ${nameColor}">${student.name}</span>
                             ${statusText}
@@ -398,9 +379,72 @@
             refreshAllData();
         }
 
-        async function toggleTeacherStatus(id, status) {
-            await fetch('/api/teachers/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) });
-            refreshAllData();
+        // 📊 평가표 모달 제어 및 다운로드
+        function openReportModal() {
+            document.getElementById('report-modal').classList.remove('hidden');
+            renderTeacherLogsTable();
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+
+        function renderTeacherLogsTable() {
+            const tbody = document.getElementById('teacher-logs-body');
+            tbody.innerHTML = '';
+
+            teacherLogsData.forEach(row => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/40 border-b border-slate-700/50">
+                        <td class="p-2.5 font-mono text-slate-400">${row.date}</td>
+                        <td class="p-2.5 font-mono text-emerald-400 font-bold">${row.time}</td>
+                        <td class="p-2.5 font-bold text-white">${row.teacherName}</td>
+                        <td class="p-2.5 text-indigo-300">${row.subject}</td>
+                        <td class="p-2.5">${row.grade}학년 ${row.classNum}반</td>
+                        <td class="p-2.5 font-mono text-slate-400">${row.cardId}</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${row.status.includes('정시') ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${row.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 📥 엑셀/CSV 파일 다운로드 기능
+        function downloadTeacherReportCSV() {
+            if (teacherLogsData.length === 0) return alert('다운로드할 입실 기록이 없습니다.');
+
+            let csvContent = "\uFEFF"; // 한글 깨짐 방지 UTF-8 BOM
+            csvContent += "태그 날짜,입실 시간,선생님 이름,담당 과목,입실 교실,RFID 카드 ID,입실 결과\n";
+
+            teacherLogsData.forEach(row => {
+                csvContent += `${row.date},${row.time},${row.teacherName},${row.subject},${row.grade}학년 ${row.classNum}반,${row.cardId},${row.status}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `교사_수업입실_월간평가표_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        // 교사 RFID 태그 시뮬레이션 (테스트용)
+        async function simulateTeacherRfidTag() {
+            const name = prompt('RFID 태그할 선생님 성함을 입력하세요:', '한과학 선생님');
+            if (!name) return;
+
+            await fetch('/api/rfid/teacher-tag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    teacherName: name,
+                    subject: '과학',
+                    grade: viewGrade,
+                    classNum: viewClass,
+                    cardId: 'RFID-T' + Math.floor(1000 + Math.random() * 9000)
+                })
+            });
+
+            await refreshAllData();
+            renderTeacherLogsTable();
         }
     </script>
 </body>
