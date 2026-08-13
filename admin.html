@@ -13,47 +13,38 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-    <!-- 1️⃣ 로그인 화면 (직급별 퀵 로그인 버튼 4개 탑재) -->
+    <!-- 1️⃣ 퀵 로그인 화면 -->
     <div id="login-container" class="flex h-screen items-center justify-center">
         <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700">
             <h2 class="text-3xl font-black mb-2 text-center text-white"><i class="fa-solid fa-tower-observation text-indigo-500"></i> 통합 관제센터</h2>
             <p class="text-center text-xs text-slate-400 mb-8">접속하실 교직원 직급(권한)을 선택해 주세요.</p>
             
             <div class="grid grid-cols-2 gap-4">
-                <!-- 1. 학교장 (마스터) -->
                 <button onclick="quickLogin('master', '1234')" class="flex flex-col items-center justify-center gap-2 p-5 bg-slate-900 border border-slate-700 rounded-xl hover:border-indigo-500 hover:bg-indigo-900/30 transition group">
                     <i class="fa-solid fa-crown text-3xl text-amber-400 group-hover:scale-110 transition"></i>
                     <span class="font-bold text-sm text-white">학교장 (마스터)</span>
                     <span class="text-[10px] text-slate-500">전교생 총괄 관제</span>
                 </button>
-
-                <!-- 2. 학년 부장 -->
                 <button onclick="quickLogin('head1', '1234')" class="flex flex-col items-center justify-center gap-2 p-5 bg-slate-900 border border-slate-700 rounded-xl hover:border-blue-500 hover:bg-blue-900/30 transition group">
                     <i class="fa-solid fa-layer-group text-3xl text-blue-400 group-hover:scale-110 transition"></i>
                     <span class="font-bold text-sm text-white">학년 부장</span>
                     <span class="text-[10px] text-slate-500">해당 학년 총괄</span>
                 </button>
-
-                <!-- 3. 담임 교사 -->
                 <button onclick="quickLogin('room1-1', '1234')" class="flex flex-col items-center justify-center gap-2 p-5 bg-slate-900 border border-slate-700 rounded-xl hover:border-emerald-500 hover:bg-emerald-900/30 transition group">
                     <i class="fa-solid fa-chalkboard-user text-3xl text-emerald-400 group-hover:scale-110 transition"></i>
                     <span class="font-bold text-sm text-white">담임 교사</span>
                     <span class="text-[10px] text-slate-500">학급 상세 제어</span>
                 </button>
-
-                <!-- 4. 교과 교사 -->
                 <button onclick="quickLogin('subject1', '1234')" class="flex flex-col items-center justify-center gap-2 p-5 bg-slate-900 border border-slate-700 rounded-xl hover:border-purple-500 hover:bg-purple-900/30 transition group">
                     <i class="fa-solid fa-book-open-reader text-3xl text-purple-400 group-hover:scale-110 transition"></i>
                     <span class="font-bold text-sm text-white">교과 교사</span>
                     <span class="text-[10px] text-slate-500">입실 학급 선택</span>
                 </button>
             </div>
-            
-            <p class="text-[10px] text-slate-500 text-center mt-6">※ 시스템 테스트를 위한 퀵 로그인 패널입니다.</p>
         </div>
     </div>
 
-    <!-- 대시보드 화면 -->
+    <!-- 2️⃣ 대시보드 메인 화면 -->
     <div id="dashboard-container" class="hidden p-6 max-w-7xl mx-auto space-y-6">
         
         <!-- 상단 헤더 -->
@@ -65,21 +56,18 @@
                 <p id="user-role-badge" class="text-sm text-indigo-300 mt-1 font-bold">사용자 접속 중</p>
             </div>
             <div id="top-controls" class="flex items-center gap-4">
-                <!-- JS에서 권한별로 버튼이 동적 렌더링 됩니다 -->
+                <!-- JS에서 권한별 컨트롤이 삽입됩니다 -->
             </div>
         </header>
 
         <!-- [ALL - 전체 상황판 뷰] (학교장, 학년부장 전용) -->
         <div id="total-view-panel" class="hidden space-y-4">
             <h2 class="text-lg font-bold text-slate-300 border-b border-slate-700 pb-2">관할 학급 관제 현황 (클릭 시 상세 이동)</h2>
-            <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- JS 동적 렌더링 -->
-            </div>
+            <div id="class-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
 
-        <!-- [개별 학급 상세 뷰] (모두 공통) -->
+        <!-- [개별 학급 상세 뷰] -->
         <div id="class-view-panel" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- ⬅️ 교실 좌석 배치도 -->
             <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                     <h2 class="font-black text-xl text-white" id="room-title">1학년 1반 관제</h2>
@@ -92,17 +80,16 @@
                 <div class="w-full flex justify-center mb-8">
                     <div class="bg-slate-900 text-slate-400 px-16 py-3 rounded-lg font-black text-sm border-b-4 border-slate-700">교 탁</div>
                 </div>
-                <!-- 좌석도 -->
                 <div id="seating-chart" class="seat-grid w-full max-w-3xl mx-auto flex-1 pb-4"></div>
             </div>
 
-            <!-- ➡️ 우측 명렬표 -->
+            <!-- 우측 명렬표 -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl flex flex-col overflow-hidden h-[750px]">
                 <div class="p-4 border-b border-slate-700 bg-slate-900 flex justify-between items-center">
                     <h3 class="font-bold text-white">학급 명렬 리스트</h3>
                     <span id="class-stats" class="text-xs font-bold text-indigo-300">총 0명</span>
                 </div>
-                <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <div class="flex-1 overflow-y-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-700">
                             <tr>
@@ -127,7 +114,6 @@
         let viewGrade = 1, viewClass = 1;
         const totalSeats = 25;
 
-        // 퀵 로그인 함수
         async function quickLogin(id, pw) {
             try {
                 const res = await fetch('/api/login', {
@@ -137,7 +123,7 @@
                 
                 if (data.success) {
                     currentUser = data.user;
-                    setupRoleView(); // 권한별 자동 화면 셋업
+                    setupRoleView(); 
                     
                     document.getElementById('login-container').classList.add('hidden');
                     document.getElementById('dashboard-container').classList.remove('hidden');
@@ -149,33 +135,30 @@
             } catch (err) { alert('서버 오류'); }
         }
 
-        // 권한별 초기 뷰 셋업
         function setupRoleView() {
             if (currentUser.role === 'PRINCIPAL' || currentUser.role === 'GRADE_HEAD') {
-                viewMode = 'TOTAL'; // 교장, 부장은 상황판이 메인
+                viewMode = 'TOTAL'; 
                 if(currentUser.role === 'GRADE_HEAD') viewGrade = currentUser.grade;
             } else if (currentUser.role === 'HOMEROOM') {
-                viewMode = 'CLASS'; // 담임은 자기 반이 메인
+                viewMode = 'CLASS'; 
                 viewGrade = currentUser.grade;
                 viewClass = currentUser.classNum;
             } else if (currentUser.role === 'SUBJECT') {
-                viewMode = 'CLASS'; // 교과교사도 교실이 메인 (기본 1-1로 세팅)
+                viewMode = 'CLASS'; 
                 viewGrade = 1;
                 viewClass = 1;
             }
             renderHeaderControls();
         }
 
-        // 상단 헤더 버튼 권한별 렌더링
         function renderHeaderControls() {
             const controls = document.getElementById('top-controls');
             let html = '';
 
-            // 교과 교사용 반 선택 드롭다운
             if (currentUser.role === 'SUBJECT') {
                 html += `
                     <div class="flex items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-700 mr-4">
-                        <span class="text-xs text-slate-400">수업 학급 선택:</span>
+                        <span class="text-xs text-slate-400">수업 학급:</span>
                         <select onchange="goToClass(this.value, ${viewClass})" class="bg-slate-800 text-white text-sm rounded outline-none p-1">
                             <option value="1" ${viewGrade==1?'selected':''}>1학년</option><option value="2" ${viewGrade==2?'selected':''}>2학년</option><option value="3" ${viewGrade==3?'selected':''}>3학년</option>
                         </select>
@@ -186,27 +169,15 @@
                 `;
             }
 
-            // 마스터 전용 긴급 해제 버튼
             if (currentUser.role === 'PRINCIPAL') {
-                html += `
-                    <button onclick="triggerEmergency()" class="px-5 py-2.5 rounded-lg text-sm font-black bg-rose-600 text-white hover:bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.5)] transition">
-                        <i class="fa-solid fa-unlock-keyhole"></i> 전교생 긴급 해제
-                    </button>
-                `;
+                html += `<button onclick="triggerEmergency()" class="px-5 py-2.5 rounded-lg text-sm font-black bg-rose-600 text-white hover:bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.5)] transition"><i class="fa-solid fa-unlock-keyhole"></i> 전교생 긴급 해제</button>`;
             }
 
-            // 전체 상황판 버튼 (교장, 학년부장만 표시)
             if (['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role)) {
-                html += `
-                    <button onclick="switchToTotalView()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-bold transition">
-                        <i class="fa-solid fa-border-all"></i> 전체 상황판
-                    </button>
-                `;
+                html += `<button onclick="switchToTotalView()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-bold transition"><i class="fa-solid fa-border-all"></i> 전체 상황판</button>`;
             }
 
-            // 공통 로그아웃 버튼
             html += `<button onclick="location.reload()" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-300 transition"><i class="fa-solid fa-power-off"></i></button>`;
-            
             controls.innerHTML = html;
         }
 
@@ -217,7 +188,7 @@
                 studentsData = data.students;
                 classesData = data.classes;
                 renderMainView();
-            } catch (err) { console.error('데이터 통신 에러'); }
+            } catch (err) { console.error('데이터 에러'); }
         }
 
         function renderMainView() {
@@ -235,7 +206,6 @@
         function switchToTotalView() { viewMode = 'TOTAL'; renderMainView(); }
         function goToClass(g, c) { viewGrade = Number(g); viewClass = Number(c); viewMode = 'CLASS'; renderHeaderControls(); renderMainView(); }
 
-        // 1️⃣ 관제센터 메인 그리드 렌더링
         function renderTotalGrid() {
             const grid = document.getElementById('class-grid');
             grid.innerHTML = '';
@@ -266,7 +236,6 @@
             });
         }
 
-        // 2️⃣ 학급 상세 렌더링
         function renderClassView() {
             document.getElementById('room-title').innerText = `${viewGrade}학년 ${viewClass}반 관제 상세`;
             const classData = studentsData.filter(s => s.grade === viewGrade && s.classNum === viewClass);
@@ -307,8 +276,6 @@
             sorted.forEach(s => {
                 const isOnline = s.status === 'online';
                 const statusBadge = isOnline ? `<span class="text-xs text-indigo-400 font-bold">잠금(통제중)</span>` : `<span class="text-xs text-rose-400 font-bold">${s.reason || '결석'}</span>`;
-                
-                // 권한에 따른 사유 입력 버튼 (교과교사는 사유 입력 불가)
                 const reasonBtn = currentUser.role === 'SUBJECT' ? '-' : `<button onclick="inputReason('${s.id}')" class="text-[11px] bg-slate-700 px-3 py-1.5 rounded text-white hover:bg-slate-600">사유입력</button>`;
 
                 tbody.innerHTML += `
@@ -340,7 +307,7 @@
         }
 
         async function simulateStudentTag() {
-            const id = prompt('등교 처리할 학생 ID (s2, s3, s6) 입력:');
+            const id = prompt('출석 처리할 학생 ID (s2, s3, s6) 입력:');
             if (id) {
                 await fetch('/api/heartbeat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
                 refreshAllData();
