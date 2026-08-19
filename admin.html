@@ -3,26 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETI 통합 행정 시스템</title>
+    <title>ETI 스마트 행정 포털 (온나라 클라우드형)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 관공서 특유의 폰트 및 기본 배경색 */
-        body { background-color: #F1F5F9; color: #333333; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; letter-spacing: -0.02em; }
+        /* 부드러운 온나라 감성 폰트 및 배경 */
+        body { background-color: #F8FAFC; color: #334155; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; letter-spacing: -0.01em; }
         
-        /* 좌측 메뉴 스타일 */
-        .lnb-item { padding: 10px 16px; margin-bottom: 2px; color: #4B5563; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 4px; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
-        .lnb-item:hover { background-color: #E2E8F0; }
-        .lnb-active { background-color: #1E3A8A; color: #FFFFFF; }
-        .lnb-active:hover { background-color: #1E3A8A; }
+        /* 모서리가 둥근 위젯 스타일 */
+        .onnara-card { background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0; padding: 24px; transition: all 0.2s; }
+        
+        /* 좌측 메뉴 (LNB) */
+        .lnb-item { padding: 12px 18px; margin-bottom: 6px; color: #64748B; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 12px; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+        .lnb-item:hover { background-color: #F1F5F9; color: #0F172A; }
+        .lnb-active { background-color: #EFF6FF; color: #2563EB; font-weight: 700; }
+        
+        /* 온나라 스타일 테이블 */
+        .onnara-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .onnara-th { background-color: #F8FAFC; color: #475569; padding: 14px; font-size: 13px; font-weight: 700; text-align: center; border-bottom: 2px solid #E2E8F0; }
+        .onnara-td { padding: 12px; font-size: 13px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .onnara-tr:hover { background-color: #F8FAFC; }
 
-        /* 관공서 스타일 테이블 */
-        .admin-table { w-full; border-top: 2px solid #1E3A8A; border-collapse: collapse; }
-        .admin-th { background-color: #F8FAFC; color: #1F2937; padding: 12px; font-size: 13px; text-align: center; border-bottom: 1px solid #CBD5E1; border-right: 1px solid #E2E8F0; }
-        .admin-td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; vertical-align: middle; }
-        .admin-tr:hover { background-color: #F8FAFC; }
+        .seat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         
-        .seat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        /* 📱 모바일 전용 숨김 처리 */
+        @media (max-width: 768px) {
+            .pc-only { display: none !important; }
+            .mobile-full { width: 100% !important; padding: 10px !important; margin: 0 !important; border-radius: 0 !important; border: none !important; box-shadow: none !important;}
+        }
+
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
@@ -33,229 +42,208 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden">
 
-    <!-- 1️⃣ 퀵 로그인 모달 -->
-    <div id="login-container" class="fixed inset-0 z-50 bg-slate-200 flex items-center justify-center">
-        <div class="bg-white p-8 border border-gray-400 w-[500px] shadow-md rounded-sm">
-            <div class="flex flex-col items-center mb-6 border-b border-gray-300 pb-6">
-                <i class="fa-solid fa-building-flag text-5xl text-[#1E3A8A] mb-3"></i>
-                <h2 class="text-2xl font-black text-gray-800 tracking-tighter">ETI 스마트 행정 포털</h2>
-                <p class="text-sm text-gray-500 mt-1">교직원 전용 인증 시스템</p>
+    <!-- 로그인 모달 -->
+    <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0]/80 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white p-10 rounded-2xl shadow-xl w-[500px]">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-cloud"></i></div>
+                <h2 class="text-2xl font-black text-gray-800 tracking-tight">온나라 스마트 학교 포털</h2>
+                <p class="text-sm text-gray-500 mt-1">교직원 통합 업무 시스템</p>
             </div>
             
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="quickLogin('master', '1234')" class="border border-gray-300 bg-gray-50 hover:bg-blue-50 py-4 px-2 rounded-sm text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-user-tie text-[#1E3A8A] text-xl"></i>학교장 / 마스터</button>
-                <button onclick="quickLogin('head1', '1234')" class="border border-gray-300 bg-gray-50 hover:bg-blue-50 py-4 px-2 rounded-sm text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-users text-[#1E3A8A] text-xl"></i>학년 부장</button>
-                <button onclick="quickLogin('room1-1', '1234')" class="border border-gray-300 bg-gray-50 hover:bg-blue-50 py-4 px-2 rounded-sm text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-chalkboard-user text-[#1E3A8A] text-xl"></i>담임 교사</button>
-                <button onclick="quickLogin('subject1', '1234')" class="border border-gray-300 bg-gray-50 hover:bg-blue-50 py-4 px-2 rounded-sm text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-book-open-reader text-[#1E3A8A] text-xl"></i>교과 교사</button>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="quickLogin('master', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition hover:border-blue-300 hover:shadow-md"><i class="fa-solid fa-user-tie text-blue-600 text-2xl"></i>학교장 / 관리자</button>
+                <button onclick="quickLogin('head1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition hover:border-blue-300 hover:shadow-md"><i class="fa-solid fa-users text-blue-600 text-2xl"></i>학년 부장</button>
+                <button onclick="quickLogin('room1-1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition hover:border-blue-300 hover:shadow-md"><i class="fa-solid fa-chalkboard-user text-blue-600 text-2xl"></i>담임 교사</button>
+                <button onclick="quickLogin('subject1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition hover:border-blue-300 hover:shadow-md"><i class="fa-solid fa-book-open-reader text-blue-600 text-2xl"></i>교과 교사</button>
             </div>
         </div>
     </div>
 
-    <!-- 2️⃣ 상단 대 카테고리 (GNB) -->
-    <header class="h-[60px] bg-[#1E3A8A] text-white flex items-center justify-between px-6 shadow-md z-20 shrink-0">
-        <div class="flex items-center gap-3">
-            <i class="fa-solid fa-building-flag text-2xl"></i>
-            <span class="text-lg font-bold tracking-widest">ETI 행정 포털 시스템</span>
+    <!-- 상단 GNB (PC 전용) -->
+    <header id="top-header" class="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20 shrink-0 pc-only">
+        <div class="flex items-center gap-3 text-blue-700">
+            <i class="fa-solid fa-cloud text-3xl"></i>
+            <span class="text-xl font-black tracking-tight">ETI 온나라 포털</span>
         </div>
-        <div class="flex gap-8 text-[15px] font-semibold">
-            <span class="cursor-pointer border-b-2 border-white pb-1">통합 관리망</span>
-            <span class="text-blue-300 hover:text-white cursor-pointer transition">교무 업무</span>
-            <span class="text-blue-300 hover:text-white cursor-pointer transition">전자 결재</span>
-            <span class="text-blue-300 hover:text-white cursor-pointer transition">나의 메뉴</span>
+        <div class="flex gap-8 text-[15px] font-bold text-gray-500">
+            <span class="text-blue-600 border-b-2 border-blue-600 pb-1 cursor-pointer">기기 제어망</span>
+            <span class="hover:text-gray-800 cursor-pointer transition">교무 학사</span>
+            <span class="hover:text-gray-800 cursor-pointer transition">전자 결재</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <div id="profile-name" class="font-bold text-gray-800 text-sm">로그인 대기</div>
+                <div id="profile-role" class="text-[11px] text-gray-500">권한 확인중</div>
+            </div>
+            <button onclick="location.reload()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden h-[calc(100vh-60px)]">
+    <div class="flex flex-1 overflow-hidden h-[calc(100vh-70px)] bg-[#F8FAFC]">
         
-        <!-- 3️⃣ 좌측 세로 바 (LNB) & 좌측 상단 로그인 정보창 -->
-        <aside class="w-[240px] bg-white border-r border-gray-300 flex flex-col shrink-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-            
-            <!-- 로그인 정보창 -->
-            <div class="p-5 border-b border-gray-200 bg-slate-50 flex flex-col items-center">
-                <div class="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center mb-3 shadow-sm">
-                    <i class="fa-solid fa-user-tie text-gray-400 text-3xl"></i>
-                </div>
-                <div id="profile-name" class="font-bold text-gray-800 text-[15px]">로그인 필요</div>
-                <div id="profile-role" class="text-xs text-gray-500 mb-4 bg-gray-200 px-2 py-0.5 rounded-sm mt-1">권한 없음</div>
-                <div class="flex w-full gap-2">
-                    <button class="flex-1 py-1.5 bg-white border border-gray-300 text-xs font-bold text-gray-600 rounded-sm hover:bg-gray-100">내 정보</button>
-                    <button onclick="location.reload()" class="flex-1 py-1.5 bg-gray-600 border border-gray-600 text-xs font-bold text-white rounded-sm hover:bg-gray-700">로그아웃</button>
-                </div>
-            </div>
-
-            <!-- 하위 메뉴 트리 -->
-            <div class="p-3 flex-1 overflow-y-auto">
-                <div class="text-xs font-bold text-gray-400 mb-2 pl-2">행정 관리 메뉴</div>
-                <div onclick="switchMenu('HOME')" id="menu-HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-5 text-center"></i> 포털 홈 (공지사항)</div>
-                <div onclick="switchMenu('DB')" id="menu-DB" class="lnb-item"><i class="fa-solid fa-address-card w-5 text-center"></i> 학적 DB 및 학생증 발급</div>
-                <div onclick="switchMenu('MONITOR')" id="menu-MONITOR" class="lnb-item"><i class="fa-solid fa-shield-halved w-5 text-center"></i> 실시간 기기 관제 (ETI)</div>
-            </div>
+        <!-- 좌측 LNB (PC 전용) -->
+        <aside id="side-menu" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10 pt-6 px-4 pc-only shadow-[4px_0_10px_rgba(0,0,0,0.01)]">
+            <div class="text-xs font-bold text-gray-400 mb-3 pl-2">포털 메뉴</div>
+            <div onclick="switchMenu('HOME')" id="menu-HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-6 text-center text-lg"></i> 대시보드 홈</div>
+            <div onclick="switchMenu('DB')" id="menu-DB" class="lnb-item"><i class="fa-solid fa-address-card w-6 text-center text-lg"></i> 학적 DB 및 진급 관리</div>
+            <div onclick="switchMenu('MONITOR')" id="menu-MONITOR" class="lnb-item"><i class="fa-solid fa-shield-halved w-6 text-center text-lg"></i> 기기 통제 관제소 (ETI)</div>
+            <div class="lnb-item opacity-50 cursor-not-allowed mt-4"><i class="fa-solid fa-chart-line w-6 text-center text-lg"></i> 통계 리포트 (준비중)</div>
+            <div class="lnb-item opacity-50 cursor-not-allowed"><i class="fa-solid fa-gear w-6 text-center text-lg"></i> 시스템 관리 (준비중)</div>
         </aside>
 
-        <!-- 4️⃣ 중앙 메인 화면 영역 -->
-        <main class="flex-1 overflow-y-auto bg-[#F1F5F9] p-6 relative">
+        <!-- 중앙 메인 화면 -->
+        <main class="flex-1 overflow-y-auto p-8 relative mobile-full">
             
-            <!-- 공통 네비게이션 경로 (Breadcrumb) -->
-            <div class="text-xs text-gray-500 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-house"></i> > 행정 관리 > <span id="breadcrumb-current" class="font-bold text-gray-700">포털 홈</span>
-            </div>
-
-            <!-- 📌 [메인 홈: 공지사항] -->
-            <div id="page-HOME" class="block">
-                <!-- 상단 요약 알림판 -->
-                <div class="bg-white border border-gray-300 p-5 rounded-sm mb-6 flex items-center gap-4 shadow-sm border-l-4 border-l-red-600">
-                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-bullhorn"></i></div>
-                    <div>
-                        <h3 class="font-bold text-gray-800">[필독] 2026학년도 스마트 기기 관제(ETI) 시스템 정식 가동 안내</h3>
-                        <p class="text-xs text-gray-500 mt-1">전 교직원은 우측 상단의 매뉴얼을 숙지하시고, 학생증(RFID) 발급 및 DB 등록을 8월 20일까지 완료 바랍니다.</p>
+            <!-- 📌 [대시보드 홈] -->
+            <div id="page-HOME" class="block pc-only">
+                <h2 class="text-2xl font-black text-gray-800 mb-6">안녕하세요, <span class="text-blue-600" id="welcome-name">선생님</span>.</h2>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="onnara-card col-span-2">
+                        <h3 class="font-bold text-lg text-gray-800 mb-4"><i class="fa-solid fa-bell text-yellow-500"></i> 새소식 및 공지</h3>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[안내] 학생 진급 시 학적 DB '진급/반배정' 메뉴 사용법</span><span class="text-xs text-gray-400">08.19</span></li>
+                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[공지] 모바일 접속 시 자동 관제 상세화면 전환 적용</span><span class="text-xs text-gray-400">08.15</span></li>
+                        </ul>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <!-- 공지사항 게시판 -->
-                    <div class="bg-white border border-gray-300 rounded-sm shadow-sm">
-                        <div class="flex justify-between items-center p-4 border-b border-gray-200">
-                            <h3 class="font-bold text-[15px] text-[#1E3A8A]"><i class="fa-solid fa-list-ol"></i> 교직원 공지사항</h3>
-                            <span class="text-xs text-gray-400 cursor-pointer hover:text-gray-600">더보기 +</span>
-                        </div>
-                        <table class="w-full text-left text-[13px]">
-                            <tbody>
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                    <td class="p-3 text-gray-700 truncate w-full">[안내] 긴급 재난 시 전교생 기기 잠금 해제 권한 안내</td>
-                                    <td class="p-3 text-gray-400 whitespace-nowrap">2026-08-14</td>
-                                </tr>
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                    <td class="p-3 text-gray-700 truncate w-full">[업데이트] 학부모 알림 발송 문자(SMS) 연동 완료</td>
-                                    <td class="p-3 text-gray-400 whitespace-nowrap">2026-08-12</td>
-                                </tr>
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                    <td class="p-3 text-gray-700 truncate w-full">[요청] 신입생 사진 스캔본 DB 업로드 요망</td>
-                                    <td class="p-3 text-gray-400 whitespace-nowrap">2026-08-10</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50 cursor-pointer">
-                                    <td class="p-3 text-gray-700 truncate w-full">[양식] 학부모 동의서 (스마트 기기 통제) 제출 양식</td>
-                                    <td class="p-3 text-gray-400 whitespace-nowrap">2026-08-05</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- 나의 업무 요약 -->
-                    <div class="bg-white border border-gray-300 rounded-sm shadow-sm p-5 flex flex-col justify-center items-center h-full">
-                        <i class="fa-solid fa-chart-pie text-gray-300 text-6xl mb-4"></i>
-                        <p class="text-sm font-bold text-gray-600">오늘의 결재 및 처리할 업무가 없습니다.</p>
-                        <p class="text-xs text-gray-400 mt-1">좌측 [실시간 기기 관제] 메뉴를 통해 출결을 확인하세요.</p>
+                    <div class="onnara-card bg-blue-600 text-white flex flex-col justify-center items-center">
+                        <i class="fa-solid fa-mobile-screen text-5xl mb-4 opacity-80"></i>
+                        <div class="text-lg font-bold">ETI 시스템 가동 중</div>
+                        <div class="text-sm opacity-80 mt-1">전교생 기기 완벽 통제 중</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 📌 [학적 DB 및 학생증 발급] -->
-            <div id="page-DB" class="hidden space-y-4">
-                <div class="flex justify-between items-end mb-2">
-                    <h2 class="text-[18px] font-bold text-gray-800"><i class="fa-solid fa-address-card text-[#1E3A8A]"></i> 학적 DB 및 학생증(RFID) 발급</h2>
-                    <button onclick="downloadExcel()" class="bg-[#107C41] hover:bg-green-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold shadow-sm flex items-center gap-2">
-                        <i class="fa-solid fa-file-excel"></i> 엑셀(CSV) 저장
-                    </button>
+            <!-- 📌 [학적 DB 및 진급 관리] -->
+            <div id="page-DB" class="hidden space-y-6 pc-only">
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-address-card text-blue-600 mr-2"></i> 학적 통합 DB 및 진급 관리</h2>
+                    <button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md flex items-center gap-2 transition"><i class="fa-solid fa-file-excel"></i> 엑셀 다운로드</button>
                 </div>
 
-                <!-- DB 등록 폼 -->
-                <div class="bg-white border border-gray-300 shadow-sm p-5 flex gap-6">
-                    <div class="flex flex-col items-center gap-2 w-[110px] shrink-0">
-                        <div class="w-24 h-[120px] bg-gray-100 border border-gray-300 flex items-center justify-center overflow-hidden relative shadow-inner">
-                            <i class="fa-solid fa-user text-3xl text-gray-300 absolute z-0"></i>
-                            <img id="photo-preview-img" src="" class="w-full h-full object-cover relative z-10 hidden" />
+                <!-- 권한 경고창 (담임, 교과교사에게 보임) -->
+                <div id="db-permission-warning" class="hidden bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm font-bold mb-4 shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> 권한 없음: 학적 데이터 등록, 수정, 삭제 및 진급 처리는 [학교장] 및 [학년 부장] 권한이 필요합니다. 열람만 가능합니다.
+                </div>
+
+                <!-- 관리자 전용 제어부 (마스터, 학년부장만 보임) -->
+                <div id="db-admin-controls" class="grid grid-cols-2 gap-6">
+                    <!-- 신규 등록 폼 -->
+                    <div class="onnara-card flex gap-4">
+                        <div class="flex flex-col items-center gap-2 w-[100px] shrink-0">
+                            <div class="w-[90px] h-[120px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative border border-gray-200">
+                                <img id="photo-preview-img" src="" class="w-full h-full object-cover relative z-10 hidden" />
+                                <i class="fa-solid fa-user text-3xl text-gray-300 absolute"></i>
+                            </div>
+                            <label class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-[11px] px-2 py-1.5 rounded-lg cursor-pointer font-bold w-full text-center transition">
+                                사진 첨부 <input type="file" id="db-photo" accept="image/*" class="hidden" onchange="previewPhoto(event)">
+                            </label>
                         </div>
-                        <label class="bg-gray-600 hover:bg-gray-700 text-white text-[11px] px-3 py-1.5 rounded-sm cursor-pointer font-bold w-full text-center shadow-sm">
-                            사진 찾기 <input type="file" id="db-photo" accept="image/*" class="hidden" onchange="previewPhoto(event)">
-                        </label>
+                        <div class="flex-1 grid grid-cols-2 gap-3">
+                            <input type="text" id="db-id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="학번 (ID)">
+                            <input type="text" id="db-name" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="성명">
+                            <input type="text" id="db-s-phone" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="학생 본인 연락처">
+                            <input type="text" id="db-p-phone" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="학부모 연락처">
+                            <input type="number" id="db-grade" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="학년" value="1">
+                            <input type="number" id="db-class" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-blue-500" placeholder="반" value="1">
+                            <button onclick="addStudentDB()" class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm font-bold shadow-md transition">신규 학적 등록</button>
+                        </div>
                     </div>
-                    <div class="flex-1 grid grid-cols-3 gap-x-4 gap-y-3">
-                        <div><label class="block text-[11px] font-bold text-gray-600 mb-1">학번 (RFID 태그번호)</label><input type="text" id="db-id" class="w-full border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-[#1E3A8A]"></div>
-                        <div><label class="block text-[11px] font-bold text-gray-600 mb-1">성명</label><input type="text" id="db-name" class="w-full border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-[#1E3A8A]"></div>
-                        <div><label class="block text-[11px] font-bold text-gray-600 mb-1">학부모 연락처</label><input type="text" id="db-phone" class="w-full border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-[#1E3A8A]" placeholder="010-0000-0000"></div>
-                        <div><label class="block text-[11px] font-bold text-gray-600 mb-1">학년</label><input type="number" id="db-grade" class="w-full border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-[#1E3A8A]" value="1"></div>
-                        <div><label class="block text-[11px] font-bold text-gray-600 mb-1">반</label><input type="number" id="db-class" class="w-full border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-[#1E3A8A]" value="1"></div>
-                        <div class="flex items-end">
-                            <button onclick="addStudentDB()" class="w-full bg-[#1E3A8A] hover:bg-blue-900 text-white px-4 py-1.5 rounded-sm text-sm font-bold shadow-sm h-[34px]">신규 학적 등록</button>
+
+                    <!-- 진급 및 일괄 반 배정 기능 -->
+                    <div class="onnara-card bg-blue-50 border-blue-100 flex flex-col justify-center">
+                        <h3 class="font-bold text-blue-800 mb-2"><i class="fa-solid fa-users-gear"></i> 체크된 학생 일괄 진급/반 배정</h3>
+                        <p class="text-xs text-gray-500 mb-4">아래 표에서 대상을 체크한 후 변경할 학년/반을 설정하세요.</p>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-gray-700">이동할 소속:</span>
+                            <input type="number" id="promote-grade" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm" placeholder="학년">
+                            <span class="text-gray-500">학년</span>
+                            <input type="number" id="promote-class" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm" placeholder="반">
+                            <span class="text-gray-500">반으로</span>
+                            <button onclick="applyPromotion()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md transition">일괄 이동</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- DB 테이블 -->
-                <div class="bg-white border border-gray-300 shadow-sm overflow-hidden">
-                    <table class="admin-table w-full">
+                <!-- DB 리스트 -->
+                <div class="onnara-card p-0 overflow-hidden">
+                    <table class="onnara-table">
                         <thead>
                             <tr>
-                                <th class="admin-th w-16">사진</th>
-                                <th class="admin-th w-24">학번</th>
-                                <th class="admin-th w-32">성명</th>
-                                <th class="admin-th w-24">소속</th>
-                                <th class="admin-th">학부모 연락처</th>
-                                <th class="admin-th w-24">기기상태</th>
-                                <th class="admin-th w-40 border-r-0">업무 (학생증 발급)</th>
+                                <th class="onnara-th w-10"><input type="checkbox" id="check-all" onclick="toggleAllChecks(this)"></th>
+                                <th class="onnara-th w-16">사진</th>
+                                <th class="onnara-th w-20">학번</th>
+                                <th class="onnara-th w-24">성명</th>
+                                <th class="onnara-th w-20">소속</th>
+                                <th class="onnara-th">학생 연락처</th>
+                                <th class="onnara-th">학부모 연락처</th>
+                                <th class="onnara-th w-24">기기상태</th>
+                                <th class="onnara-th w-32">업무</th>
                             </tr>
                         </thead>
-                        <tbody id="db-table-body" class="bg-white"></tbody>
+                        <tbody id="db-table-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 📌 [실시간 기기 관제] -->
-            <div id="page-MONITOR" class="hidden space-y-4">
-                <div class="flex justify-between items-end mb-2">
-                    <h2 class="text-[18px] font-bold text-gray-800"><i class="fa-solid fa-shield-halved text-[#1E3A8A]"></i> ETI 실시간 기기 관제 (클릭 시 상세)</h2>
-                    <button id="btn-emergency" onclick="triggerEmergency()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-sm text-sm font-bold shadow-sm">
-                        <i class="fa-solid fa-triangle-exclamation"></i> 전교생 긴급 잠금 해제
-                    </button>
+            <!-- 📌 [실시간 기기 관제 (모바일은 이 화면만 보임)] -->
+            <div id="page-MONITOR" class="hidden mobile-full">
+                <div class="flex justify-between items-center mb-6 pc-only">
+                    <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-shield-halved text-blue-600 mr-2"></i> 실시간 학급 관제</h2>
+                    <button id="btn-emergency" onclick="triggerEmergency()" class="hidden bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-red-200 transition"><i class="fa-solid fa-unlock-keyhole"></i> 전교생 긴급 잠금 해제</button>
                 </div>
-                <!-- 그리드(상황판) -->
-                <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 
-                <!-- 상세 교실 뷰 (숨겨져 있다가 블록 클릭시 나타남) -->
-                <div id="monitor-detail" class="hidden mt-6 bg-white border border-gray-300 shadow-sm p-6 relative">
-                    <button onclick="closeMonitorDetail()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark text-xl"></i></button>
-                    <h3 class="font-bold text-lg text-gray-800 mb-4 border-b border-gray-200 pb-2" id="detail-title">1학년 1반 관제 상세</h3>
-                    <div class="w-full flex justify-center mb-6"><div class="bg-gray-100 text-gray-500 px-16 py-2 border border-gray-300 font-bold text-sm">교 탁</div></div>
-                    <div id="seating-chart" class="seat-grid w-full max-w-3xl mx-auto mb-6"></div>
-                    <table class="admin-table w-full">
-                        <thead>
-                            <tr><th class="admin-th w-16">번호</th><th class="admin-th w-32">이름</th><th class="admin-th w-32">기기 상태</th><th class="admin-th border-r-0">사유 입력</th></tr>
-                        </thead>
-                        <tbody id="detail-list-body" class="bg-white"></tbody>
-                    </table>
+                <!-- 모니터 그리드 -->
+                <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pc-only"></div>
+                
+                <!-- 상세 교실 뷰 (모바일 접속시 이 부분이 꽉 차게 나옴) -->
+                <div id="monitor-detail" class="hidden onnara-card relative mt-6 mobile-full shadow-lg">
+                    <button onclick="closeMonitorDetail()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center pc-only"><i class="fa-solid fa-xmark"></i></button>
+                    
+                    <h3 class="font-black text-xl text-gray-800 mb-6 flex items-center gap-3" id="detail-title"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm">관제중</span> 1학년 1반</h3>
+                    
+                    <div class="w-full flex justify-center mb-8"><div class="bg-slate-100 text-slate-400 px-20 py-3 rounded-xl font-black text-sm border-2 border-dashed border-slate-300">교 탁</div></div>
+                    
+                    <div id="seating-chart" class="seat-grid w-full max-w-3xl mx-auto mb-8"></div>
+                    
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-100 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                                <tr><th class="p-3 text-center">번호</th><th class="p-3">이름</th><th class="p-3 text-center">연락처</th><th class="p-3 text-center">상태</th></tr>
+                            </thead>
+                            <tbody id="detail-list-body" class="divide-y divide-gray-200 bg-white text-sm"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- 🖨️ [학생증 인쇄 미리보기 모달] -->
-    <div id="print-modal" class="fixed inset-0 bg-gray-900/60 z-50 hidden flex items-center justify-center print-hide">
-        <div class="bg-gray-100 p-6 shadow-2xl border border-gray-400 w-[400px]">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-[15px] font-bold text-gray-800"><i class="fa-solid fa-print text-[#1E3A8A]"></i> 학생증(RFID) 발급 뷰어</h3>
-                <button onclick="closePrintModal()" class="text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark text-lg"></i></button>
+    <!-- 🖨️ [학생증 인쇄 뷰어] -->
+    <div id="print-modal" class="fixed inset-0 bg-gray-900/40 z-50 hidden flex items-center justify-center backdrop-blur-sm print-hide">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-[400px]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-black text-gray-800">학생증(RFID) 발급</h3>
+                <button onclick="closePrintModal()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="flex justify-center bg-white p-6 border border-gray-300 mb-4 shadow-inner">
-                <!-- 학생증 카드 영역 -->
-                <div id="print-area" class="w-[210px] h-[330px] bg-white border border-gray-400 flex flex-col items-center p-4 relative shadow-sm">
-                    <div class="w-full text-center border-b-2 border-[#1E3A8A] pb-2 mb-3">
-                        <h4 class="text-[13px] font-black text-[#1E3A8A] tracking-widest">대한민국 중학교</h4>
-                    </div>
-                    <div class="w-[85px] h-[115px] bg-gray-50 border border-gray-300 mb-3 flex items-center justify-center overflow-hidden relative">
+            <div class="flex justify-center bg-gray-50 p-6 rounded-xl border border-gray-200 mb-6">
+                <div id="print-area" class="w-[210px] h-[330px] bg-white rounded-xl shadow-md border border-gray-200 flex flex-col items-center p-4 relative overflow-hidden">
+                    <div class="w-full text-center border-b-2 border-blue-600 pb-2 mb-4"><h4 class="text-sm font-black text-blue-800 tracking-widest">대한민국 학교</h4></div>
+                    <div class="w-[90px] h-[120px] bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden border border-gray-200 relative">
                         <img id="print-photo" src="" class="w-full h-full object-cover hidden" />
                         <i id="print-no-photo" class="fa-solid fa-user text-4xl text-gray-300 absolute"></i>
                     </div>
                     <div class="text-center w-full">
-                        <p id="print-dept" class="text-[11px] font-bold text-gray-600 mb-1">1학년 1반</p>
-                        <h2 id="print-name" class="text-xl font-black text-gray-900 tracking-widest mb-1">홍길동</h2>
-                        <p id="print-id" class="text-[10px] font-mono text-gray-700 bg-gray-100 px-2 py-1 border border-gray-200 mt-2">ID: s12345</p>
+                        <p id="print-dept" class="text-xs font-bold text-gray-500 mb-1">1학년 1반</p>
+                        <h2 id="print-name" class="text-xl font-black text-gray-900 tracking-widest mb-2">홍길동</h2>
+                        <p id="print-id" class="text-[10px] font-mono text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">ID: s12345</p>
                     </div>
                 </div>
             </div>
-            <div class="flex gap-2 justify-end print-hide">
-                <button onclick="closePrintModal()" class="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm font-bold hover:bg-gray-50">닫기</button>
-                <button onclick="window.print()" class="px-4 py-1.5 bg-[#1E3A8A] text-white text-sm font-bold shadow-sm hover:bg-blue-900 flex items-center gap-2"><i class="fa-solid fa-print"></i> 인쇄 실행</button>
+            <div class="flex gap-3 justify-end print-hide">
+                <button onclick="closePrintModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200">취소</button>
+                <button onclick="window.print()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-blue-700 flex items-center gap-2"><i class="fa-solid fa-print"></i> 인쇄 실행</button>
             </div>
         </div>
     </div>
@@ -268,6 +256,9 @@
         
         let viewGrade = 1, viewClass = 1;
 
+        // 📱 모바일(스마트폰) 접속 감지 로직
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
         async function quickLogin(id, pw) {
             const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id,pw}) });
             const data = await res.json();
@@ -275,38 +266,44 @@
                 currentUser = data.user;
                 document.getElementById('login-container').classList.add('hidden');
                 
-                // 좌측 상단 로그인 정보 세팅
-                document.getElementById('profile-name').innerText = currentUser.name;
-                document.getElementById('profile-role').innerText = getRoleName(currentUser.role);
-                
-                // 교장선생님만 긴급해제 버튼 보이기
-                if(currentUser.role === 'PRINCIPAL') document.getElementById('btn-emergency').classList.remove('hidden');
+                // PC일 경우 기본 세팅
+                if(!isMobile) {
+                    document.getElementById('profile-name').innerText = `${currentUser.name} 접속중`;
+                    document.getElementById('profile-role').innerText = currentUser.role;
+                    document.getElementById('welcome-name').innerText = currentUser.name;
+                    if(currentUser.role === 'PRINCIPAL') document.getElementById('btn-emergency').classList.remove('hidden');
+                    
+                    // DB 권한 제어 (교장, 부장만 CRUD 허용)
+                    if(!['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role)) {
+                        document.getElementById('db-admin-controls').classList.add('hidden');
+                        document.getElementById('db-permission-warning').classList.remove('hidden');
+                    }
+                    switchMenu('HOME');
+                } 
+                // 📱 모바일일 경우 모든 메뉴 숨기고 '자신의 관제 상세'로 강제 고정
+                else {
+                    switchMenu('MONITOR');
+                    document.getElementById('top-header').classList.add('hidden');
+                    document.getElementById('side-menu').classList.add('hidden');
+                    
+                    if(currentUser.role === 'HOMEROOM') { viewGrade = currentUser.grade; viewClass = currentUser.classNum; }
+                    openClassDetail(viewGrade, viewClass);
+                }
                 
                 fetchData();
                 setInterval(fetchData, 3000);
             } else { alert('인증 오류'); }
         }
 
-        function getRoleName(role) {
-            if(role==='PRINCIPAL') return '마스터/학교장';
-            if(role==='GRADE_HEAD') return '학년 부장';
-            if(role==='HOMEROOM') return '담임 교사';
-            return '교과 교사';
-        }
-
         function switchMenu(pageName) {
+            if(isMobile && pageName !== 'MONITOR') return; // 모바일은 관제만 허용
             document.querySelectorAll('.lnb-item').forEach(el => el.classList.remove('lnb-active'));
-            document.getElementById('menu-' + pageName).classList.add('lnb-active');
+            if(document.getElementById('menu-' + pageName)) document.getElementById('menu-' + pageName).classList.add('lnb-active');
             
             document.getElementById('page-HOME').classList.add('hidden');
             document.getElementById('page-DB').classList.add('hidden');
             document.getElementById('page-MONITOR').classList.add('hidden');
-            
             document.getElementById('page-' + pageName).classList.remove('hidden');
-            
-            // Breadcrumb 업데이트
-            const titles = {'HOME':'포털 홈 (공지사항)', 'DB':'학적 DB 및 학생증 발급', 'MONITOR':'실시간 기기 관제 (ETI)'};
-            document.getElementById('breadcrumb-current').innerText = titles[pageName];
         }
 
         async function fetchData() {
@@ -314,73 +311,95 @@
             const data = await res.json();
             studentsData = data.students;
             classesData = data.classes;
-            renderDBTable();
-            renderMonitorGrid();
-            // 만약 상세 화면이 열려있다면 갱신
-            if(!document.getElementById('monitor-detail').classList.contains('hidden')) {
-                openClassDetail(viewGrade, viewClass);
-            }
+            if(!isMobile) renderDBTable();
+            if(!isMobile) renderMonitorGrid();
+            if(!document.getElementById('monitor-detail').classList.contains('hidden')) openClassDetail(viewGrade, viewClass);
         }
 
         function previewPhoto(event) {
             const file = event.target.files[0];
             if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 base64Photo = e.target.result;
-                const imgEl = document.getElementById('photo-preview-img');
-                imgEl.src = base64Photo;
-                imgEl.classList.remove('hidden');
+                document.getElementById('photo-preview-img').src = base64Photo;
+                document.getElementById('photo-preview-img').classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         }
 
+        // DB 등록
         async function addStudentDB() {
             const payload = {
-                id: document.getElementById('db-id').value,
-                name: document.getElementById('db-name').value,
-                grade: document.getElementById('db-grade').value,
-                classNum: document.getElementById('db-class').value,
-                seat: Math.floor(Math.random() * 25) + 1,
-                parentPhone: document.getElementById('db-phone').value,
-                photo: base64Photo 
+                id: document.getElementById('db-id').value, name: document.getElementById('db-name').value,
+                studentPhone: document.getElementById('db-s-phone').value, parentPhone: document.getElementById('db-p-phone').value,
+                grade: document.getElementById('db-grade').value, classNum: document.getElementById('db-class').value,
+                seat: Math.floor(Math.random() * 25) + 1, photo: base64Photo 
             };
             if(!payload.id || !payload.name) return alert('학번과 성명을 입력하세요.');
-
             await fetch('/api/students/add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-            alert('학적 DB 등록 완료');
             
             document.getElementById('db-id').value = ''; document.getElementById('db-name').value = '';
-            document.getElementById('photo-preview-img').classList.add('hidden');
-            base64Photo = null;
-            fetchData();
+            document.getElementById('photo-preview-img').classList.add('hidden'); base64Photo = null;
+            fetchData(); alert('등록 완료');
+        }
+
+        // 💡 체크박스 일괄 선택
+        function toggleAllChecks(source) {
+            checkboxes = document.getElementsByName('student-check');
+            for(let i=0, n=checkboxes.length;i<n;i++) checkboxes[i].checked = source.checked;
+        }
+
+        // 💡 선택된 학생 일괄 진급 처리
+        async function applyPromotion() {
+            const checkboxes = document.getElementsByName('student-check');
+            const checkedIds = [];
+            for (let i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) checkedIds.push(checkboxes[i].value);
+            }
+            if (checkedIds.length === 0) return alert('진급시킬 학생을 체크해주세요.');
+            
+            const targetGrade = document.getElementById('promote-grade').value;
+            const targetClass = document.getElementById('promote-class').value;
+            if(!targetGrade || !targetClass) return alert('이동할 학년과 반을 입력하세요.');
+
+            if(confirm(`선택한 ${checkedIds.length}명의 학생을 ${targetGrade}학년 ${targetClass}반으로 일괄 이동하시겠습니까?`)) {
+                await fetch('/api/students/promote', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ studentIds: checkedIds, targetGrade, targetClass }) });
+                document.getElementById('check-all').checked = false;
+                fetchData(); alert('진급 및 반 배정이 완료되었습니다.');
+            }
         }
 
         async function deleteStudent(id) {
-            if(confirm('이 학적 데이터를 완전히 삭제하시겠습니까? (복구 불가)')) {
-                await fetch(`/api/students/${id}`, { method: 'DELETE' });
-                fetchData();
-            }
+            if(confirm('데이터를 완전히 삭제하시겠습니까?')) { await fetch(`/api/students/${id}`, { method: 'DELETE' }); fetchData(); }
         }
 
         function renderDBTable() {
             const tbody = document.getElementById('db-table-body');
             tbody.innerHTML = '';
+            const canEdit = ['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role); // 권한 체크
+
             studentsData.forEach(s => {
-                const statusStr = s.status === 'online' ? '<span class="text-green-700 font-bold">정상 (제어중)</span>' : `<span class="text-red-600 font-bold">${s.reason || '미접속'}</span>`;
-                const photoHtml = s.photo ? `<img src="${s.photo}" class="w-8 h-10 object-cover border border-gray-300 mx-auto">` : `<div class="w-8 h-10 bg-gray-100 border border-gray-300 mx-auto flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[10px]"></i></div>`;
+                const statusStr = s.status === 'online' ? '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[11px] font-bold">정상</span>' : `<span class="bg-red-50 text-red-600 px-2 py-1 rounded text-[11px] font-bold">${s.reason || '이탈'}</span>`;
+                const photoHtml = s.photo ? `<img src="${s.photo}" class="w-8 h-10 object-cover rounded-md mx-auto">` : `<div class="w-8 h-10 bg-gray-100 rounded-md mx-auto flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-xs"></i></div>`;
+                
+                // 삭제 버튼, 체크박스는 권한이 없으면 disabled
+                const checkHtml = canEdit ? `<input type="checkbox" name="student-check" value="${s.id}">` : `<input type="checkbox" disabled>`;
+                const deleteBtn = canEdit ? `<button onclick="deleteStudent('${s.id}')" class="text-xs bg-white text-gray-500 hover:text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-lg border border-gray-200 transition"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 tbody.innerHTML += `
-                    <tr class="admin-tr">
-                        <td class="admin-td text-center p-1">${photoHtml}</td>
-                        <td class="admin-td text-center font-mono">${s.id}</td>
-                        <td class="admin-td font-bold text-gray-800">${s.name}</td>
-                        <td class="admin-td text-center">${s.grade}-${s.classNum}</td>
-                        <td class="admin-td text-gray-500">${s.parentPhone || ''}</td>
-                        <td class="admin-td text-center">${statusStr}</td>
-                        <td class="admin-td text-center border-r-0 space-x-1">
-                            <button onclick="openPrintModal('${s.id}')" class="text-xs bg-white text-gray-700 hover:bg-gray-100 px-3 py-1.5 rounded-sm font-bold border border-gray-300"><i class="fa-solid fa-id-badge text-[#1E3A8A]"></i> 발급</button>
-                            <button onclick="deleteStudent('${s.id}')" class="text-xs bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 px-2 py-1.5 rounded-sm border border-gray-300"><i class="fa-solid fa-trash"></i></button>
+                    <tr class="onnara-tr">
+                        <td class="onnara-td text-center">${checkHtml}</td>
+                        <td class="onnara-td text-center p-1">${photoHtml}</td>
+                        <td class="onnara-td text-center font-mono text-gray-500">${s.id}</td>
+                        <td class="onnara-td font-bold text-gray-800 text-center">${s.name}</td>
+                        <td class="onnara-td text-center font-bold text-blue-600">${s.grade}-${s.classNum}</td>
+                        <td class="onnara-td text-center text-gray-500">${s.studentPhone || '-'}</td>
+                        <td class="onnara-td text-center text-gray-500">${s.parentPhone || '-'}</td>
+                        <td class="onnara-td text-center">${statusStr}</td>
+                        <td class="onnara-td text-center space-x-1">
+                            <button onclick="openPrintModal('${s.id}')" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg font-bold border border-blue-200 transition">발급</button>
+                            ${deleteBtn}
                         </td>
                     </tr>
                 `;
@@ -388,62 +407,47 @@
         }
 
         function downloadExcel() {
-            let csvContent = "\uFEFF학번,성명,학년,반,학부모 연락처,기기상태\n";
-            studentsData.forEach(s => { csvContent += `${s.id},${s.name},${s.grade},${s.classNum},${s.parentPhone || ''},${s.status}\n`; });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            let csvContent = "\uFEFF학번,성명,학년,반,학생 연락처,학부모 연락처,기기상태\n";
+            studentsData.forEach(s => { csvContent += `${s.id},${s.name},${s.grade},${s.classNum},${s.studentPhone || ''},${s.parentPhone || ''},${s.status}\n`; });
             const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `학적DB_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
+            link.href = URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }));
+            link.download = `학적DB.csv`; link.click();
         }
 
-        function openPrintModal(studentId) {
-            const s = studentsData.find(st => st.id === studentId);
-            if(!s) return;
-            document.getElementById('print-dept').innerText = `${s.grade}학년 ${s.classNum}반`;
-            document.getElementById('print-name').innerText = s.name;
-            document.getElementById('print-id').innerText = `ID: ${s.id}`;
-            const imgEl = document.getElementById('print-photo');
-            const iconEl = document.getElementById('print-no-photo');
+        function openPrintModal(id) {
+            const s = studentsData.find(st => st.id === id);
+            document.getElementById('print-dept').innerText = `${s.grade}학년 ${s.classNum}반`; document.getElementById('print-name').innerText = s.name; document.getElementById('print-id').innerText = `ID: ${s.id}`;
+            const imgEl = document.getElementById('print-photo'); const iconEl = document.getElementById('print-no-photo');
             if(s.photo) { imgEl.src = s.photo; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); } 
             else { imgEl.classList.add('hidden'); iconEl.classList.remove('hidden'); }
             document.getElementById('print-modal').classList.remove('hidden');
         }
-
         function closePrintModal() { document.getElementById('print-modal').classList.add('hidden'); }
 
         function renderMonitorGrid() {
             const grid = document.getElementById('monitor-grid');
             grid.innerHTML = '';
-            
             const viewableClasses = currentUser.role === 'GRADE_HEAD' ? classesData.filter(c => c.grade === currentUser.grade) : classesData;
-
             viewableClasses.forEach(c => {
                 const classStudents = studentsData.filter(s => s.grade === c.grade && s.classNum === c.classNum);
                 const isWarning = !c.isClassOn;
-                const borderClass = isWarning ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white hover:border-[#1E3A8A]';
-                const statusBadge = isWarning ? '<span class="text-[11px] bg-red-600 text-white px-2 py-0.5 rounded-sm font-bold">수업 외 (주의)</span>' : '<span class="text-[11px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-sm font-bold border border-blue-200">진행 중</span>';
-
+                const borderClass = isWarning ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white hover:shadow-md';
                 grid.innerHTML += `
-                    <div onclick="openClassDetail(${c.grade}, ${c.classNum})" class="p-5 border ${borderClass} cursor-pointer transition shadow-sm">
+                    <div onclick="openClassDetail(${c.grade}, ${c.classNum})" class="onnara-card ${borderClass} p-5 cursor-pointer">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="text-lg font-black text-gray-800">${c.grade}학년 ${c.classNum}반</h3>
-                            ${statusBadge}
+                            ${isWarning ? '<span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">수업 외</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">진행 중</span>'}
                         </div>
-                        <div class="text-[13px] text-gray-500 mb-4 border-b border-gray-200 pb-2">담임: ${c.teacher} &nbsp;|&nbsp; 재적: ${classStudents.length}명</div>
-                        <div class="text-[13px] font-bold text-gray-700">
-                            기기 통제중: <span class="text-lg text-[#1E3A8A]">${classStudents.filter(s => s.status === 'online').length}</span> 명
-                        </div>
+                        <div class="text-sm font-bold text-gray-600 mt-4">통제 가동: <span class="text-blue-600 text-xl">${classStudents.filter(s => s.status === 'online').length}</span>명</div>
                     </div>
                 `;
             });
         }
 
-        // 특정 반 클릭시 상세 화면 열기
         function openClassDetail(g, c) {
             viewGrade = g; viewClass = c;
             document.getElementById('monitor-detail').classList.remove('hidden');
-            document.getElementById('detail-title').innerText = `${g}학년 ${c}반 관제 상세`;
+            document.getElementById('detail-title').innerHTML = `<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm mr-2">관제중</span> ${g}학년 ${c}반`;
             
             const classData = studentsData.filter(s => s.grade === g && s.classNum === c);
             const grid = document.getElementById('seating-chart');
@@ -454,55 +458,36 @@
                 if (student) {
                     const isOnline = student.status === 'online';
                     const isEmergency = student.reason === '🚨긴급 재난 해제';
-                    
-                    let bgColor = isOnline ? 'bg-blue-50 border-blue-300' : 'bg-gray-100 border-gray-300 text-gray-500';
-                    if (isEmergency) bgColor = 'bg-red-50 border-red-400 text-red-600';
-                    
-                    let statusText = isOnline ? `<span class="text-blue-700 font-bold text-[11px]"><i class="fa-solid fa-lock"></i> 통제중</span>` : `<span class="text-gray-500 font-bold text-[10px]">${student.reason || '이탈'}</span>`;
-                    if (isEmergency) statusText = `<span class="text-red-600 font-bold text-[11px]">해제됨</span>`;
+                    let bg = isOnline ? 'bg-blue-50 border-blue-300' : 'bg-gray-100 border-gray-300 text-gray-500';
+                    if (isEmergency) bg = 'bg-red-50 border-red-300 text-red-600';
+                    let stText = isOnline ? `<span class="text-blue-700 font-bold text-[11px]"><i class="fa-solid fa-lock"></i> 잠금</span>` : `<span class="text-gray-500 font-bold text-[10px]">${student.reason || '이탈'}</span>`;
+                    if (isEmergency) stText = `<span class="text-red-600 font-bold text-[11px]">해제됨</span>`;
 
-                    grid.innerHTML += `
-                        <div class="flex flex-col items-center justify-center p-2 border ${bgColor} aspect-square shadow-sm">
-                            <span class="text-[9px] mb-1 font-mono text-gray-400">${student.seat}</span>
-                            <span class="font-bold text-[13px] mb-1 text-gray-800">${student.name}</span>
-                            ${statusText}
-                        </div>
-                    `;
-                } else { grid.innerHTML += `<div class="flex flex-col items-center justify-center p-2 border border-dashed border-gray-300 bg-gray-50 aspect-square"><span class="text-[9px] text-gray-400">${i}</span></div>`; }
+                    grid.innerHTML += `<div class="flex flex-col items-center justify-center p-2 rounded-xl border-2 ${bg} aspect-square shadow-sm"><span class="text-[9px] mb-1 font-mono text-gray-400">${student.seat}</span><span class="font-bold text-[13px] mb-1 text-gray-800">${student.name}</span>${stText}</div>`;
+                } else { grid.innerHTML += `<div class="flex flex-col items-center justify-center p-2 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 aspect-square"><span class="text-[9px] text-gray-300">${i}</span></div>`; }
             }
 
             const tbody = document.getElementById('detail-list-body');
             tbody.innerHTML = '';
-            
-            const sorted = [...classData].sort((a, b) => a.seat - b.seat);
-            sorted.forEach(s => {
+            [...classData].sort((a, b) => a.seat - b.seat).forEach(s => {
                 const isOnline = s.status === 'online';
-                const statusBadge = isOnline ? `<span class="text-xs text-blue-700 font-bold">잠금 (통제중)</span>` : `<span class="text-xs text-red-600 font-bold">${s.reason || '미접속'}</span>`;
-                
                 tbody.innerHTML += `
-                    <tr class="admin-tr border-b border-gray-200">
-                        <td class="admin-td text-center text-gray-500 font-mono">${s.seat}</td>
-                        <td class="admin-td font-bold text-gray-800">${s.name}</td>
-                        <td class="admin-td text-center">${statusBadge}</td>
-                        <td class="admin-td text-center border-r-0"><button onclick="inputReason('${s.id}')" class="text-[11px] bg-white border border-gray-300 px-3 py-1 rounded-sm text-gray-700 hover:bg-gray-50 font-bold">사유수정</button></td>
+                    <tr>
+                        <td class="p-3 text-center text-gray-400 font-mono">${s.seat}</td>
+                        <td class="p-3 font-bold text-gray-800">${s.name}</td>
+                        <td class="p-3 text-center text-gray-500 font-mono text-xs">${s.studentPhone || '-'}</td>
+                        <td class="p-3 text-center">${isOnline ? '<span class="text-blue-600 font-bold text-xs"><i class="fa-solid fa-lock"></i> 통제중</span>' : `<button onclick="inputReason('${s.id}')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg font-bold">${s.reason || '사유입력'}</button>`}</td>
                     </tr>
                 `;
             });
         }
-
         function closeMonitorDetail() { document.getElementById('monitor-detail').classList.add('hidden'); }
-
-        async function inputReason(studentId) {
-            const reason = prompt('학생의 결석/이탈 사유를 입력하세요:');
-            if (reason) { await fetch('/api/reason', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ studentId, reason }) }); fetchData(); }
+        async function inputReason(id) {
+            const reason = prompt('사유를 입력하세요:');
+            if (reason) { await fetch('/api/reason', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ studentId: id, reason }) }); fetchData(); }
         }
-
         async function triggerEmergency() {
-            if(confirm('🚨 주의: 전교생 기기를 긴급 잠금 해제하시겠습니까?')) {
-                await fetch('/api/emergency', { method: 'POST' });
-                fetchData();
-                alert('일괄 해제 처리 완료');
-            }
+            if(confirm('전교생 기기를 긴급 잠금 해제하시겠습니까?')) { await fetch('/api/emergency', { method: 'POST' }); fetchData(); }
         }
     </script>
 </body>
