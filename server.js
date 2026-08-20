@@ -12,12 +12,11 @@ app.use(express.json({ limit: '10mb' }));
 // ==========================================
 // 1. 시스템 라우트 & 기초 DB
 // ==========================================
-app.get('/', (req, res) => res.status(200).json({ status: "ONLINE", system: "ETI 온나라 스마트 모바일 ERP" }));
+app.get('/', (req, res) => res.status(200).json({ status: "ONLINE", system: "ETI SYSTEM (enter time internet)" }));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 const ROLES = { PRINCIPAL: 'PRINCIPAL', GRADE_HEAD: 'GRADE_HEAD', HOMEROOM: 'HOMEROOM', SUBJECT: 'SUBJECT' };
 
-// 💡 교직원 DB (시간표 teaching 데이터 연동)
 let users = [
     { id: 'master', pw: '1234', role: ROLES.PRINCIPAL, name: '학교장' },
     { id: 'head1', pw: '1234', role: ROLES.GRADE_HEAD, grade: 1, name: '1학년 부장' },
@@ -65,13 +64,29 @@ app.get('/api/dashboard', (req, res) => {
     res.json({ students, classes, settings: systemSettings, calendar: academicCalendar, approvals: approvalDocs });
 });
 
-// 전자결재 및 캘린더 API
+// 💡 [핵심] 전자결재 자동 승인 처리 로직 추가
 app.post('/api/approvals', (req, res) => {
     const { date, studentId, studentName, type, reason, requesterId, requesterName } = req.body;
     const targetStudent = students.find(s => s.id === studentId);
-    approvalDocs.push({ id: 'DOC-' + (docIdCounter++).toString().padStart(3, '0'), date, studentId, studentName, grade: targetStudent ? targetStudent.grade : 1, type, reason, requesterId, requesterName, status: 'PENDING' });
-    res.json({ success: true });
+    const user = users.find(u => u.id === requesterId);
+    
+    let initialStatus = 'PENDING';
+    
+    // 💡 학급장(담임)이나 학년장이 본인 소속 학생을 올리면 즉시 '자동 승인'
+    if (user) {
+        if (user.role === 'PRINCIPAL') initialStatus = 'APPROVED';
+        else if (user.role === 'GRADE_HEAD' && user.grade === targetStudent.grade) initialStatus = 'APPROVED';
+        else if (user.role === 'HOMEROOM' && user.grade === targetStudent.grade && user.classNum === targetStudent.classNum) initialStatus = 'APPROVED';
+    }
+
+    approvalDocs.push({ 
+        id: 'DOC-' + (docIdCounter++).toString().padStart(3, '0'), 
+        date, studentId, studentName, grade: targetStudent ? targetStudent.grade : 1, 
+        type, reason, requesterId, requesterName, status: initialStatus 
+    });
+    res.json({ success: true, status: initialStatus });
 });
+
 app.post('/api/approvals/process', (req, res) => { const { docId, status } = req.body; const doc = approvalDocs.find(d => d.id === docId); if (doc) doc.status = status; res.json({ success: true }); });
 app.post('/api/calendar', (req, res) => { const { date, title, type } = req.body; academicCalendar.push({ id: Date.now().toString(), date, title, type }); res.json({ success: true }); });
 app.delete('/api/calendar/:id', (req, res) => { academicCalendar = academicCalendar.filter(c => c.id !== req.params.id); res.json({ success: true }); });
@@ -86,7 +101,7 @@ app.post('/api/reason', (req, res) => { const { studentId, reason } = req.body; 
 app.post('/api/emergency', (req, res) => { students.forEach(s => { s.status = 'offline'; s.reason = '🚨긴급 재난 해제'; }); res.json({ success: true }); });
 
 // ==========================================
-// 3. ETI 기기 통제 심장 (우선순위 엔진)
+// 3. ETI 기기 통제 심장
 // ==========================================
 app.post('/api/heartbeat', (req, res) => {
     const { id } = req.body; 
@@ -114,4 +129,4 @@ app.post('/api/heartbeat', (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-server.listen(PORT, () => console.log(`🚀 ETI 모바일 최적화 서버 가동 (포트 ${PORT})`));
+server.listen(PORT, () => console.log(`🚀 ETI SYSTEM 백엔드 서버 가동 (포트 ${PORT})`));

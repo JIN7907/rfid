@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETI 스마트 행정 포털</title>
+    <title>ETI SYSTEM (enter time internet)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #F8FAFC; color: #334155; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; letter-spacing: -0.01em; }
-        .onnara-card { background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0; padding: 24px; transition: all 0.2s; }
+        .eti-card { background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0; padding: 24px; transition: all 0.2s; }
         .lnb-item { padding: 12px 18px; margin-bottom: 6px; color: #64748B; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 12px; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
         .lnb-item:hover { background-color: #F1F5F9; color: #0F172A; }
         .lnb-active { background-color: #EFF6FF; color: #2563EB; font-weight: 700; }
-        .onnara-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .onnara-th { background-color: #F8FAFC; color: #475569; padding: 14px; font-size: 13px; font-weight: 700; text-align: center; border-bottom: 2px solid #E2E8F0; }
-        .onnara-td { padding: 12px; font-size: 13px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
-        .onnara-tr:hover { background-color: #F8FAFC; }
+        .eti-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .eti-th { background-color: #F8FAFC; color: #475569; padding: 14px; font-size: 13px; font-weight: 700; text-align: center; border-bottom: 2px solid #E2E8F0; }
+        .eti-td { padding: 12px; font-size: 13px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .eti-tr:hover { background-color: #F8FAFC; }
         .seat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         .tab-btn { padding: 10px 24px; font-weight: 700; font-size: 14px; border-radius: 8px; transition: all 0.2s; }
         .tab-active { background-color: #2563EB; color: white; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
         .tab-inactive { background-color: #F1F5F9; color: #64748B; }
         
-        /* 모바일 대응 최적화 */
         @media (max-width: 768px) { 
             .pc-only { display: none !important; } 
             .mobile-full { width: 100% !important; padding: 12px !important; margin: 0 !important; border-radius: 0 !important; border: none !important; box-shadow: none !important;} 
@@ -32,47 +31,50 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden">
 
-    <!-- 1️⃣ 로그인 모달 -->
+    <!-- 로그인 모달 -->
     <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0] flex items-center justify-center backdrop-blur-sm px-4">
         <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl w-full max-w-[500px]">
-            <div class="flex flex-col items-center mb-8"><div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-cloud"></i></div><h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">온나라 스마트 학교 포털</h2></div>
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-shield-cat"></i></div>
+                <h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">ETI SYSTEM<br><span class="text-[13px] font-bold text-gray-500">(enter time internet)</span></h2>
+            </div>
             <div class="grid grid-cols-2 gap-3 md:gap-4">
                 <button onclick="quickLogin('master', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-user-tie text-blue-600 text-2xl"></i>학교장 (마스터)</button>
-                <button onclick="quickLogin('head1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-users text-blue-600 text-2xl"></i>학년 부장 (승인권)</button>
-                <button onclick="quickLogin('room1-1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-chalkboard-user text-blue-600 text-2xl"></i>담임 교사 (기안)</button>
-                <button onclick="quickLogin('subject1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-briefcase-medical text-blue-600 text-2xl"></i>교과/보건 교사</button>
+                <button onclick="quickLogin('head1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-users text-blue-600 text-2xl"></i>학년 부장 (총괄/승인)</button>
+                <button onclick="quickLogin('room1-1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-chalkboard-user text-blue-600 text-2xl"></i>담임 교사 (학급 예외)</button>
+                <button onclick="quickLogin('subject1', '1234')" class="border border-gray-200 bg-gray-50 hover:bg-blue-50 py-5 rounded-xl text-[13px] md:text-sm font-bold flex flex-col items-center gap-2"><i class="fa-solid fa-briefcase-medical text-blue-600 text-2xl"></i>보건/교과 (기안/요청)</button>
             </div>
         </div>
     </div>
 
-    <!-- 2️⃣ 상단 GNB (PC 전용) -->
+    <!-- 상단 GNB (PC 전용) -->
     <header id="top-header" class="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-8 z-20 shrink-0 pc-only">
-        <div class="flex items-center gap-3 text-blue-700"><i class="fa-solid fa-cloud text-3xl"></i><span class="text-xl font-black tracking-tight">ETI 온나라 포털</span></div>
+        <div class="flex items-center gap-3 text-blue-700"><i class="fa-solid fa-shield-cat text-3xl"></i><span class="text-xl font-black tracking-tight">ETI SYSTEM</span></div>
         <div class="flex gap-8 text-[15px] font-bold text-gray-500">
             <span id="gnb-HOME" onclick="switchMenu('HOME')" class="gnb-item text-blue-600 border-b-2 border-blue-600 pb-1 hover:text-blue-600 cursor-pointer transition">기기 제어망</span>
             <span id="gnb-CALENDAR" onclick="switchMenu('CALENDAR')" class="gnb-item hover:text-blue-600 cursor-pointer transition"><i class="fa-regular fa-calendar-check mr-1"></i>교무 학사</span>
-            <span id="gnb-APPROVAL" onclick="switchMenu('APPROVAL')" class="gnb-item hover:text-blue-600 cursor-pointer transition"><i class="fa-solid fa-file-signature mr-1"></i>전자 결재</span>
+            <span id="gnb-APPROVAL" onclick="switchMenu('APPROVAL')" class="gnb-item hover:text-blue-600 cursor-pointer transition"><i class="fa-solid fa-file-signature mr-1"></i>예외 결재</span>
         </div>
         <div class="flex items-center gap-4"><div class="text-right"><div id="profile-name" class="font-bold text-gray-800 text-sm">대기</div><div id="profile-role" class="text-[11px] text-gray-500">권한</div></div><button onclick="location.reload()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition"><i class="fa-solid fa-right-from-bracket"></i></button></div>
     </header>
 
     <div class="flex flex-1 overflow-hidden h-[calc(100vh-70px)] bg-[#F8FAFC]">
-        <!-- 3️⃣ 좌측 메뉴 LNB (PC 전용) -->
+        <!-- 좌측 메뉴 LNB (PC 전용) -->
         <aside id="side-menu" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10 pt-6 px-4 pc-only shadow-[4px_0_10px_rgba(0,0,0,0.01)]">
-            <div class="text-xs font-bold text-gray-400 mb-3 pl-2">포털 주요 업무</div>
+            <div class="text-xs font-bold text-gray-400 mb-3 pl-2">주요 시스템 제어</div>
             <div onclick="switchMenu('HOME')" id="menu-HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-6 text-center text-lg"></i> 대시보드 홈</div>
             <div onclick="switchMenu('DB')" id="menu-DB" class="lnb-item"><i class="fa-solid fa-address-card w-6 text-center text-lg"></i> 학적 DB 관리</div>
             <div onclick="switchMenu('MONITOR')" id="menu-MONITOR" class="lnb-item"><i class="fa-solid fa-shield-halved w-6 text-center text-lg"></i> 기기 통제 관제소</div>
             <div class="border-t border-gray-100 my-2"></div>
             <div class="text-xs font-bold text-blue-500 mb-2 pl-2 mt-2">연동 시스템</div>
-            <div onclick="switchMenu('APPROVAL')" id="menu-APPROVAL" class="lnb-item"><i class="fa-solid fa-file-signature w-6 text-center text-lg"></i> 학생 예외 전자 결재</div>
+            <div onclick="switchMenu('APPROVAL')" id="menu-APPROVAL" class="lnb-item"><i class="fa-solid fa-file-signature w-6 text-center text-lg"></i> 학생 예외 처리/결재</div>
             <div onclick="switchMenu('CALENDAR')" id="menu-CALENDAR" class="lnb-item"><i class="fa-regular fa-calendar-check w-6 text-center text-lg"></i> 학사 일정 캘린더</div>
             <div class="border-t border-gray-100 my-2"></div>
             <div onclick="switchMenu('STATS')" id="menu-STATS" class="lnb-item"><i class="fa-solid fa-chart-pie w-6 text-center text-lg"></i> ETI 통계 리포트</div>
             <div onclick="switchMenu('SETTINGS')" id="menu-SETTINGS" class="lnb-item"><i class="fa-solid fa-gear w-6 text-center text-lg"></i> ETI 시간표 설정</div>
         </aside>
 
-        <!-- 4️⃣ 메인 작업 공간 -->
+        <!-- 메인 작업 공간 -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 relative mobile-full">
             
             <!-- 📌 [대시보드 홈 (PC)] -->
@@ -84,45 +86,47 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-6">
-                    <div class="onnara-card col-span-2"><h3 class="font-bold text-lg text-gray-800 mb-4"><i class="fa-solid fa-bullhorn text-blue-500"></i> 새소식 및 공지</h3>
+                    <div class="eti-card col-span-2"><h3 class="font-bold text-lg text-gray-800 mb-4"><i class="fa-solid fa-bullhorn text-blue-500"></i> 새소식 및 공지</h3>
                         <ul class="space-y-3">
-                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[안내] 학생 조퇴/보건실 이용 시 [전자 결재]를 통해 상신 바랍니다.</span><span class="text-xs text-blue-600 font-bold">NEW</span></li>
-                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[공지] 모바일 접속 시 권한별 맞춤형 시간표 연동 관제가 적용됩니다.</span><span class="text-xs text-blue-600 font-bold">NEW</span></li>
+                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[안내] 담임 및 학년부장 선생님이 본인 소속 학생의 예외를 신청하면 결재 없이 <b class="text-blue-600">즉시 승인</b>됩니다.</span><span class="text-xs text-blue-600 font-bold">NEW</span></li>
+                            <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"><span class="text-sm font-semibold text-gray-700">[안내] 보건교사 및 교과교사의 요청은 해당 학년장의 결재가 필요합니다.</span></li>
                         </ul>
                     </div>
-                    <div class="onnara-card bg-blue-600 text-white flex flex-col justify-center items-center">
-                        <i class="fa-solid fa-mobile-screen text-5xl mb-4 opacity-80"></i><div class="text-lg font-bold">ETI 시스템 가동 중</div><div class="text-sm opacity-80 mt-1">전교생 기기 통제 중</div>
+                    <div class="eti-card bg-blue-600 text-white flex flex-col justify-center items-center">
+                        <i class="fa-solid fa-mobile-screen text-5xl mb-4 opacity-80"></i><div class="text-lg font-bold">ETI SYSTEM 가동 중</div><div class="text-sm opacity-80 mt-1">전교생 기기 통제 중</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 📌 [개인 예외 전자 결재 (PC)] -->
+            <!-- 📝 📌 [개인 예외 전자 결재 및 직권 승인] -->
             <div id="page-APPROVAL" class="hidden space-y-6 pc-only">
-                <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-file-signature text-blue-600 mr-2"></i> 학생 기기 통제 예외 전자 결재</h2>
+                <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-file-signature text-blue-600 mr-2"></i> 학생 기기 예외 처리 및 전자 결재</h2>
                 <div class="grid grid-cols-3 gap-6">
-                    <div class="onnara-card col-span-1 border-t-4 border-t-indigo-500">
-                        <h3 class="font-bold text-indigo-800 mb-4 text-lg">새 기안 작성</h3>
+                    <div class="eti-card col-span-1 border-t-4 border-t-indigo-500">
+                        <h3 class="font-bold text-indigo-800 mb-4 text-lg">예외 해제 신청/처리</h3>
+                        <p class="text-xs text-gray-500 mb-4">특정 학생의 결석/조퇴 시 해제를 요청합니다. <br><b class="text-blue-600">※ 본인 소속 학생 처리 시 즉시 해제(직결재) 처리됩니다.</b></p>
+                        
                         <label class="block text-xs font-bold text-gray-600 mb-1">해제 신청 일자</label><input type="date" id="ap-date" class="w-full border border-gray-300 rounded-lg p-2 mb-3 text-sm focus:border-indigo-500">
                         <label class="block text-xs font-bold text-gray-600 mb-1">신청 구분</label>
                         <select id="ap-type" class="w-full border border-gray-300 rounded-lg p-2 mb-3 text-sm bg-white"><option value="조퇴">조퇴</option><option value="결석">결석</option><option value="외출/보건실">외출/보건실</option></select>
                         <label class="block text-xs font-bold text-gray-600 mb-1">대상 학생 선택</label><select id="ap-student" class="w-full border border-gray-300 rounded-lg p-2 mb-3 text-sm bg-white"></select>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">상세 사유</label><textarea id="ap-reason" class="w-full border border-gray-300 rounded-lg p-2 mb-4 text-sm focus:border-indigo-500 h-20" placeholder="예: 병원 방문으로 인한 조퇴 요청"></textarea>
-                        <button onclick="submitApproval()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold shadow-md transition">상신하기 (결재 올리기)</button>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">상세 사유</label><textarea id="ap-reason" class="w-full border border-gray-300 rounded-lg p-2 mb-4 text-sm focus:border-indigo-500 h-20" placeholder="예: 병원 방문으로 인한 조퇴"></textarea>
+                        <button onclick="submitApproval()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold shadow-md transition">신청 및 처리하기</button>
                     </div>
-                    <div class="onnara-card col-span-2">
-                        <h3 class="font-bold text-gray-800 mb-4 text-lg"><i class="fa-solid fa-inbox text-gray-400 mr-1"></i> 통합 결재 문서함</h3>
-                        <table class="onnara-table text-center">
-                            <thead><tr><th class="onnara-th w-20">기안자</th><th class="onnara-th w-24">신청일자</th><th class="onnara-th w-24">대상학생</th><th class="onnara-th w-16">구분</th><th class="onnara-th text-left">사유</th><th class="onnara-th w-20">상태</th><th class="onnara-th w-24">결재(학년장)</th></tr></thead>
+                    <div class="eti-card col-span-2">
+                        <h3 class="font-bold text-gray-800 mb-4 text-lg"><i class="fa-solid fa-inbox text-gray-400 mr-1"></i> 통합 예외 처리/결재 내역</h3>
+                        <table class="eti-table text-center">
+                            <thead><tr><th class="eti-th w-20">기안자</th><th class="eti-th w-24">신청일자</th><th class="eti-th w-24">대상학생</th><th class="eti-th w-16">구분</th><th class="eti-th text-left">사유</th><th class="eti-th w-20">상태</th><th class="eti-th w-24">결재/관리</th></tr></thead>
                             <tbody id="approval-list-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- 📌 [학사 일정 캘린더 (PC)] -->
+            <!-- 📅 📌 [학사 일정 캘린더] -->
             <div id="page-CALENDAR" class="hidden space-y-6 pc-only">
                 <h2 class="text-[22px] font-black text-gray-800"><i class="fa-regular fa-calendar-check text-blue-600 mr-2"></i> 학사 일정 캘린더 연동</h2>
-                <div class="onnara-card flex gap-6 items-center bg-blue-50 border-blue-200">
+                <div class="eti-card flex gap-6 items-center bg-blue-50 border-blue-200">
                     <div class="flex-1"><h3 class="font-bold text-blue-800 mb-2">학사 일정 등록 (ETI 자동화 연동)</h3><p class="text-sm text-gray-600">시험기간을 등록하면 기기가 쉬는시간에도 <b>강제 철통 잠금</b> 되며, 재량휴업일 등록 시 기기 통제가 <b>자동 해제</b> 됩니다.</p></div>
                     <div class="flex items-end gap-3">
                         <div><label class="block text-xs font-bold text-gray-600 mb-1">일자</label><input type="date" id="cal-date" class="border p-2 rounded-lg text-sm w-32"></div>
@@ -131,19 +135,19 @@
                         <button onclick="addCalendar()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-700">일정 추가</button>
                     </div>
                 </div>
-                <div class="onnara-card p-0"><table class="onnara-table text-center"><thead><tr><th class="onnara-th w-32">일자</th><th class="onnara-th w-32">제어 속성</th><th class="onnara-th text-left">일정명</th><th class="onnara-th w-24">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table></div>
+                <div class="eti-card p-0"><table class="eti-table text-center"><thead><tr><th class="eti-th w-32">일자</th><th class="eti-th w-32">제어 속성</th><th class="eti-th text-left">일정명</th><th class="eti-th w-24">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table></div>
             </div>
 
-            <!-- 📌 [학적 DB 관리 (PC)] -->
+            <!-- 📌 [학적 DB 관리] -->
             <div id="page-DB" class="hidden space-y-6 pc-only">
                 <div class="flex justify-between items-end mb-4"><h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-address-card text-blue-600 mr-2"></i> 학적 통합 DB</h2><button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md"><i class="fa-solid fa-file-excel"></i> 엑셀 다운로드</button></div>
                 <div id="db-permission-warning" class="hidden bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm font-bold mb-4 shadow-sm">권한 없음: 등록/수정은 학년 부장 이상만 가능합니다.</div>
                 <div id="db-admin-controls" class="grid grid-cols-2 gap-6">
-                    <div class="onnara-card flex gap-4"><div class="flex flex-col items-center gap-2 w-[100px] shrink-0"><div class="w-[90px] h-[120px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative border border-gray-200"><img id="photo-preview-img" src="" class="w-full h-full object-cover relative z-10 hidden" /><i class="fa-solid fa-user text-3xl text-gray-300 absolute"></i></div><label class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-[11px] px-2 py-1.5 rounded-lg cursor-pointer font-bold w-full text-center">사진 첨부 <input type="file" id="db-photo" accept="image/*" class="hidden" onchange="previewPhoto(event)"></label></div>
+                    <div class="eti-card flex gap-4"><div class="flex flex-col items-center gap-2 w-[100px] shrink-0"><div class="w-[90px] h-[120px] bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative border border-gray-200"><img id="photo-preview-img" src="" class="w-full h-full object-cover relative z-10 hidden" /><i class="fa-solid fa-user text-3xl text-gray-300 absolute"></i></div><label class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-[11px] px-2 py-1.5 rounded-lg cursor-pointer font-bold w-full text-center">사진 첨부 <input type="file" id="db-photo" accept="image/*" class="hidden" onchange="previewPhoto(event)"></label></div>
                     <div class="flex-1 grid grid-cols-2 gap-3"><input type="text" id="db-id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" placeholder="학번"><input type="text" id="db-name" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" placeholder="성명"><input type="text" id="db-s-phone" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" placeholder="학생 연락처"><input type="text" id="db-p-phone" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" placeholder="학부모 연락처"><input type="number" id="db-grade" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" value="1"><input type="number" id="db-class" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50" value="1"><button onclick="addStudentDB()" class="col-span-2 bg-blue-600 text-white rounded-lg py-2 text-sm font-bold shadow-md">등록</button></div></div>
-                    <div class="onnara-card bg-blue-50 border-blue-100 flex flex-col justify-center"><h3 class="font-bold text-blue-800 mb-2">체크된 학생 일괄 진급/반 배정</h3><div class="flex items-center gap-3"><input type="number" id="promote-grade" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm"><span class="text-sm">학년</span><input type="number" id="promote-class" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm"><span class="text-sm">반으로</span><button onclick="applyPromotion()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">일괄 이동</button></div></div>
+                    <div class="eti-card bg-blue-50 border-blue-100 flex flex-col justify-center"><h3 class="font-bold text-blue-800 mb-2">체크된 학생 일괄 진급/반 배정</h3><div class="flex items-center gap-3"><input type="number" id="promote-grade" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm"><span class="text-sm">학년</span><input type="number" id="promote-class" class="border border-gray-300 rounded-lg w-16 px-2 py-1.5 text-center text-sm"><span class="text-sm">반으로</span><button onclick="applyPromotion()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">일괄 이동</button></div></div>
                 </div>
-                <div class="onnara-card p-0 overflow-hidden"><table class="onnara-table"><thead><tr><th class="onnara-th w-10"><input type="checkbox" id="check-all" onclick="toggleAllChecks(this)"></th><th class="onnara-th w-16">사진</th><th class="onnara-th w-20">학번</th><th class="onnara-th w-24">성명</th><th class="onnara-th w-20">소속</th><th class="onnara-th">학생 연락처</th><th class="onnara-th">학부모 연락처</th><th class="onnara-th w-24">상태</th><th class="onnara-th w-32">업무</th></tr></thead><tbody id="db-table-body"></tbody></table></div>
+                <div class="eti-card p-0 overflow-hidden"><table class="eti-table"><thead><tr><th class="eti-th w-10"><input type="checkbox" id="check-all" onclick="toggleAllChecks(this)"></th><th class="eti-th w-16">사진</th><th class="eti-th w-20">학번</th><th class="eti-th w-24">성명</th><th class="eti-th w-20">소속</th><th class="eti-th">학생 연락처</th><th class="eti-th">학부모 연락처</th><th class="eti-th w-24">상태</th><th class="eti-th w-32">업무</th></tr></thead><tbody id="db-table-body"></tbody></table></div>
             </div>
 
             <!-- 📌 [실시간 기기 통제 관제소 (PC/모바일 하이브리드 지원)] -->
@@ -161,34 +165,34 @@
 
                 <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full"></div>
                 
-                <div id="monitor-detail" class="hidden onnara-card relative mt-4 md:mt-6 mobile-full shadow-lg">
+                <div id="monitor-detail" class="hidden eti-card relative mt-4 md:mt-6 mobile-full shadow-lg">
                     <button onclick="closeMonitorDetail()" class="absolute top-5 right-5 text-gray-400 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center pc-only"><i class="fa-solid fa-xmark"></i></button>
                     <h3 class="font-black text-lg md:text-xl text-gray-800 mb-6 flex items-center gap-2" id="detail-title"></h3>
                     <div class="w-full flex justify-center mb-6"><div class="bg-slate-100 text-slate-400 px-12 md:px-20 py-2 rounded-xl font-black text-sm border-2 border-dashed border-slate-300">교 탁</div></div>
                     <div id="seating-chart" class="seat-grid w-full max-w-3xl mx-auto mb-6"></div>
                     <div class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
                         <table class="w-full text-left">
-                            <thead class="bg-gray-100 text-gray-600 text-xs uppercase font-bold border-b border-gray-200"><tr><th class="p-3 text-center">번호</th><th class="p-3">이름</th><th class="p-3 text-center">학생연락처</th><th class="p-3 text-center">상태</th></tr></thead>
+                            <thead class="bg-gray-100 text-gray-600 text-xs uppercase font-bold border-b border-gray-200"><tr><th class="p-3 text-center">번호</th><th class="p-3">이름</th><th class="p-3 text-center pc-only">학생연락처</th><th class="p-3 text-center">상태</th></tr></thead>
                             <tbody id="detail-list-body" class="divide-y divide-gray-200 bg-white text-sm"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- 📌 [통계 리포트 (PC)] -->
+            <!-- 📌 [통계 리포트] -->
             <div id="page-STATS" class="hidden space-y-6 pc-only">
                 <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-chart-pie text-blue-600 mr-2"></i> 통계 리포트</h2>
-                <div class="grid grid-cols-2 gap-6"><div class="onnara-card"><h3 class="font-bold text-gray-800 mb-6">학년별 ETI 시스템 통제율 (현재)</h3><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>1학년 (95%)</span><span>130/135대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-blue-600 h-3 rounded-full" style="width: 95%"></div></div></div><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>2학년 (90%)</span><span>110/122대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-indigo-500 h-3 rounded-full" style="width: 90%"></div></div></div><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>3학년 (98%)</span><span>140/142대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-green-500 h-3 rounded-full" style="width: 98%"></div></div></div></div>
-                <div class="onnara-card flex flex-col justify-center items-center"><h3 class="font-bold text-gray-800 mb-2 self-start">최근 7일 미인증 추이</h3><div class="flex items-end gap-4 h-40 mt-4 w-full justify-center border-b border-gray-200 pb-2"><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-12"></div><span class="text-xs text-gray-500">월</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-8"></div><span class="text-xs text-gray-500">화</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-16"></div><span class="text-xs text-gray-500">수</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-4"></div><span class="text-xs text-gray-500">목</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-10"></div><span class="text-xs text-gray-500">금</span></div></div></div></div>
+                <div class="grid grid-cols-2 gap-6"><div class="eti-card"><h3 class="font-bold text-gray-800 mb-6">학년별 ETI SYSTEM 통제율</h3><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>1학년 (95%)</span><span>130/135대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-blue-600 h-3 rounded-full" style="width: 95%"></div></div></div><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>2학년 (90%)</span><span>110/122대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-indigo-500 h-3 rounded-full" style="width: 90%"></div></div></div><div class="mb-4"><div class="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>3학년 (98%)</span><span>140/142대</span></div><div class="w-full bg-gray-200 rounded-full h-3"><div class="bg-green-500 h-3 rounded-full" style="width: 98%"></div></div></div></div>
+                <div class="eti-card flex flex-col justify-center items-center"><h3 class="font-bold text-gray-800 mb-2 self-start">최근 7일 미인증 추이</h3><div class="flex items-end gap-4 h-40 mt-4 w-full justify-center border-b border-gray-200 pb-2"><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-12"></div><span class="text-xs text-gray-500">월</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-8"></div><span class="text-xs text-gray-500">화</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-16"></div><span class="text-xs text-gray-500">수</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-4"></div><span class="text-xs text-gray-500">목</span></div><div class="flex flex-col items-center gap-2"><div class="w-8 bg-red-400 rounded-t-sm h-10"></div><span class="text-xs text-gray-500">금</span></div></div></div></div>
             </div>
             
-            <!-- 📌 [ETI 시간표 설정 (PC)] -->
+            <!-- 📌 [ETI 시간표 설정] -->
             <div id="page-SETTINGS" class="hidden space-y-6 pc-only">
-                <h2 class="text-[22px] font-black text-gray-800 mb-2"><i class="fa-solid fa-gear text-blue-600 mr-2"></i> ETI 시스템 시간표 설정</h2>
+                <h2 class="text-[22px] font-black text-gray-800 mb-2"><i class="fa-solid fa-gear text-blue-600 mr-2"></i> ETI 시간표 설정</h2>
                 <div id="setting-permission-warning" class="hidden bg-red-50 text-red-600 p-4 rounded-xl font-bold mb-4">권한 없음: 학년 부장 이상만 가능합니다.</div>
                 <div class="flex gap-3 mb-2"><button id="tab-grade-1" onclick="loadSettingTab(1)" class="tab-btn tab-active">1학년</button><button id="tab-grade-2" onclick="loadSettingTab(2)" class="tab-btn tab-inactive">2학년</button><button id="tab-grade-3" onclick="loadSettingTab(3)" class="tab-btn tab-inactive">3학년</button></div>
-                <div class="grid grid-cols-3 gap-6"><div class="onnara-card col-span-1 border-t-4 border-t-blue-600"><h3 class="font-black text-blue-800 mb-6 text-lg">기본 ETI 태그 시간</h3><div class="mb-6"><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fa-solid fa-play text-green-600 mr-1"></i> 가동 시작</label><input type="time" id="set-eti-start" class="w-full border border-gray-300 rounded-lg p-3 text-lg font-bold"></div><div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fa-solid fa-stop text-red-600 mr-1"></i> 자동 해제</label><input type="time" id="set-eti-end" class="w-full border border-gray-300 rounded-lg p-3 text-lg font-bold"></div></div>
-                <div class="onnara-card col-span-2 border-t-4 border-t-indigo-600"><h3 class="font-black text-indigo-800 mb-6 text-lg">요일별 수업 시간 (월~토)</h3><table class="onnara-table text-center"><thead><tr><th class="onnara-th w-20">요일</th><th class="onnara-th">수업 시간 (시작~종료)</th></tr></thead><tbody><tr class="onnara-tr"><td class="onnara-td font-bold">월</td><td class="onnara-td"><input type="text" id="set-mon" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="onnara-tr"><td class="onnara-td font-bold">화</td><td class="onnara-td"><input type="text" id="set-tue" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="onnara-tr"><td class="onnara-td font-bold">수</td><td class="onnara-td"><input type="text" id="set-wed" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="onnara-tr"><td class="onnara-td font-bold">목</td><td class="onnara-td"><input type="text" id="set-thu" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="onnara-tr"><td class="onnara-td font-bold">금</td><td class="onnara-td"><input type="text" id="set-fri" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="onnara-tr"><td class="onnara-td font-bold text-blue-600">토</td><td class="onnara-td"><input type="text" id="set-sat" class="border p-2 rounded w-48 text-center text-sm"></td></tr></tbody></table><div class="mt-6 flex justify-end"><button id="btn-save-setting" onclick="saveSettings()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold">설정 저장</button></div></div></div>
+                <div class="grid grid-cols-3 gap-6"><div class="eti-card col-span-1 border-t-4 border-t-blue-600"><h3 class="font-black text-blue-800 mb-6 text-lg">기본 ETI 태그 시간</h3><div class="mb-6"><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fa-solid fa-play text-green-600 mr-1"></i> 가동 시작</label><input type="time" id="set-eti-start" class="w-full border border-gray-300 rounded-lg p-3 text-lg font-bold"></div><div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fa-solid fa-stop text-red-600 mr-1"></i> 자동 해제</label><input type="time" id="set-eti-end" class="w-full border border-gray-300 rounded-lg p-3 text-lg font-bold"></div></div>
+                <div class="eti-card col-span-2 border-t-4 border-t-indigo-600"><h3 class="font-black text-indigo-800 mb-6 text-lg">요일별 수업 시간 (월~토)</h3><table class="eti-table text-center"><thead><tr><th class="eti-th w-20">요일</th><th class="eti-th">수업 시간 (시작~종료)</th></tr></thead><tbody><tr class="eti-tr"><td class="eti-td font-bold">월</td><td class="eti-td"><input type="text" id="set-mon" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="eti-tr"><td class="eti-td font-bold">화</td><td class="eti-td"><input type="text" id="set-tue" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="eti-tr"><td class="eti-td font-bold">수</td><td class="eti-td"><input type="text" id="set-wed" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="eti-tr"><td class="eti-td font-bold">목</td><td class="eti-td"><input type="text" id="set-thu" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="eti-tr"><td class="eti-td font-bold">금</td><td class="eti-td"><input type="text" id="set-fri" class="border p-2 rounded w-48 text-center text-sm"></td></tr><tr class="eti-tr"><td class="eti-td font-bold text-blue-600">토</td><td class="eti-td"><input type="text" id="set-sat" class="border p-2 rounded w-48 text-center text-sm"></td></tr></tbody></table><div class="mt-6 flex justify-end"><button id="btn-save-setting" onclick="saveSettings()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold">설정 저장</button></div></div></div>
             </div>
         </main>
     </div>
@@ -201,7 +205,6 @@
         let studentsData = [], classesData = [], systemSettings = {}, approvalDocs = [], academicCalendar = [];
         let currentUser = null, base64Photo = null; 
         
-        // 📱 모바일 및 관제 상태 관리 변수
         let mobileState = 'HOME'; // 'GRADE', 'CLASS', 'MY_DASHBOARD', 'DETAIL'
         let selectedGrade = 1;
         let viewGrade = 1, viewClass = 1;
@@ -349,7 +352,7 @@
             viewableClasses.forEach(c => {
                 const classStudents = studentsData.filter(s => s.grade === c.grade && s.classNum === c.classNum);
                 const isWarning = !c.isClassOn; const borderClass = isWarning ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white hover:shadow-md';
-                grid.innerHTML += `<div onclick="openClassDetail(${c.grade}, ${c.classNum})" class="onnara-card ${borderClass} p-5 cursor-pointer"><div class="flex justify-between items-center mb-3"><h3 class="text-lg font-black text-gray-800">${c.grade}학년 ${c.classNum}반</h3>${isWarning ? '<span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">수업 외</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">진행 중</span>'}</div><div class="text-sm font-bold text-gray-600 mt-4">통제 가동: <span class="text-blue-600 text-xl">${classStudents.filter(s => s.status === 'online').length}</span>명</div></div>`;
+                grid.innerHTML += `<div onclick="openClassDetail(${c.grade}, ${c.classNum})" class="eti-card ${borderClass} p-5 cursor-pointer"><div class="flex justify-between items-center mb-3"><h3 class="text-lg font-black text-gray-800">${c.grade}학년 ${c.classNum}반</h3>${isWarning ? '<span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">수업 외</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">진행 중</span>'}</div><div class="text-sm font-bold text-gray-600 mt-4">통제 가동: <span class="text-blue-600 text-xl">${classStudents.filter(s => s.status === 'online').length}</span>명</div></div>`;
             });
         }
 
@@ -382,22 +385,48 @@
         function closeMonitorDetail() { if(isMobile) goBackMobile(); else { document.getElementById('monitor-detail').classList.add('hidden'); document.getElementById('monitor-grid').classList.remove('hidden'); } }
 
         // ==========================================
-        // 3. 결재, 캘린더, DB, 설정 로직 
+        // 3. 결재 자동 승인 및 연동 로직
         // ==========================================
-        async function submitApproval() { const date = document.getElementById('ap-date').value; const studentId = document.getElementById('ap-student').value; const type = document.getElementById('ap-type').value; const reason = document.getElementById('ap-reason').value; if(!date || !studentId || !reason) return alert('입력 누락'); const targetStudent = studentsData.find(s => s.id === studentId); await fetch('/api/approvals', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, studentId, studentName: targetStudent.name, type, reason, requesterId: currentUser.id, requesterName: currentUser.name }) }); alert('상신 완료'); document.getElementById('ap-reason').value = ''; fetchData(); }
-        async function processApproval(docId, status) { if(confirm(status === 'APPROVED' ? '승인?' : '반려?')) { await fetch('/api/approvals/process', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ docId, status }) }); fetchData(); } }
-        function renderApprovals() { const tbody = document.getElementById('approval-list-body'); tbody.innerHTML = ''; approvalDocs.forEach(d => { let statusBadge = ''; let actionBtn = ''; if(d.status === 'PENDING') { statusBadge = '<span class="bg-yellow-100 text-yellow-700 font-bold px-2 py-1 rounded text-xs">결재대기</span>'; if((currentUser.role === 'GRADE_HEAD' && currentUser.grade === d.grade) || currentUser.role === 'PRINCIPAL') { actionBtn = `<button onclick="processApproval('${d.id}', 'APPROVED')" class="bg-blue-600 text-white text-xs px-3 py-1 rounded font-bold mr-1">승인</button><button onclick="processApproval('${d.id}', 'REJECTED')" class="bg-red-500 text-white text-xs px-3 py-1 rounded font-bold">반려</button>`; } else { actionBtn = '<span class="text-xs text-gray-400">대기중</span>'; } } else if(d.status === 'APPROVED') { statusBadge = '<span class="bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded text-xs">승인완료</span>'; actionBtn = '-'; } else { statusBadge = '<span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">반려</span>'; actionBtn = '-'; } tbody.innerHTML += `<tr class="onnara-tr"><td class="onnara-td font-bold">${d.requesterName}</td><td class="onnara-td text-gray-500 font-bold">${d.date}</td><td class="onnara-td font-bold text-blue-700">${d.studentName}</td><td class="onnara-td"><span class="bg-gray-100 border border-gray-200 px-2 py-1 rounded text-[11px] font-bold">${d.type}</span></td><td class="onnara-td text-left text-gray-600">${d.reason}</td><td class="onnara-td">${statusBadge}</td><td class="onnara-td">${actionBtn}</td></tr>`; }); }
+        async function submitApproval() { 
+            const date = document.getElementById('ap-date').value; const studentId = document.getElementById('ap-student').value; const type = document.getElementById('ap-type').value; const reason = document.getElementById('ap-reason').value; 
+            if(!date || !studentId || !reason) return alert('입력 누락'); 
+            const targetStudent = studentsData.find(s => s.id === studentId); 
+            
+            const res = await fetch('/api/approvals', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, studentId, studentName: targetStudent.name, type, reason, requesterId: currentUser.id, requesterName: currentUser.name }) }); 
+            const data = await res.json();
+            
+            if(data.status === 'APPROVED') { alert('직권으로 즉시 승인(예외 처리) 되었습니다.'); }
+            else { alert('해당 학년장에게 결재 상신이 완료되었습니다.'); }
+            
+            document.getElementById('ap-reason').value = ''; fetchData(); 
+        }
+        
+        async function processApproval(docId, status) { if(confirm(status === 'APPROVED' ? '승인하시겠습니까?' : '반려하시겠습니까?')) { await fetch('/api/approvals/process', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ docId, status }) }); fetchData(); } }
+        
+        function renderApprovals() { 
+            const tbody = document.getElementById('approval-list-body'); tbody.innerHTML = ''; 
+            approvalDocs.forEach(d => { 
+                let statusBadge = ''; let actionBtn = ''; 
+                if(d.status === 'PENDING') { 
+                    statusBadge = '<span class="bg-yellow-100 text-yellow-700 font-bold px-2 py-1 rounded text-xs">결재대기</span>'; 
+                    if((currentUser.role === 'GRADE_HEAD' && currentUser.grade === d.grade) || currentUser.role === 'PRINCIPAL') { actionBtn = `<button onclick="processApproval('${d.id}', 'APPROVED')" class="bg-blue-600 text-white text-xs px-3 py-1 rounded font-bold mr-1">승인</button><button onclick="processApproval('${d.id}', 'REJECTED')" class="bg-red-500 text-white text-xs px-3 py-1 rounded font-bold">반려</button>`; } 
+                    else { actionBtn = '<span class="text-xs text-gray-400">대기중</span>'; } 
+                } else if(d.status === 'APPROVED') { statusBadge = '<span class="bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded text-xs">승인/처리됨</span>'; actionBtn = '-'; } 
+                else { statusBadge = '<span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">반려됨</span>'; actionBtn = '-'; } 
+                tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${d.requesterName}</td><td class="eti-td text-gray-500 font-bold">${d.date}</td><td class="eti-td font-bold text-blue-700">${d.studentName}</td><td class="eti-td"><span class="bg-gray-100 border border-gray-200 px-2 py-1 rounded text-[11px] font-bold">${d.type}</span></td><td class="eti-td text-left text-gray-600">${d.reason}</td><td class="eti-td">${statusBadge}</td><td class="eti-td">${actionBtn}</td></tr>`; 
+            }); 
+        }
 
         async function addCalendar() { const date = document.getElementById('cal-date').value; const title = document.getElementById('cal-title').value; const type = document.getElementById('cal-type').value; if(!date || !title) return alert('입력오류'); await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, title, type }) }); document.getElementById('cal-title').value = ''; fetchData(); }
         async function deleteCalendar(id) { if(confirm('삭제?')) { await fetch(`/api/calendar/${id}`, { method: 'DELETE' }); fetchData(); } }
-        function renderCalendar() { const tbody = document.getElementById('calendar-list-body'); tbody.innerHTML = ''; const sortedCal = [...academicCalendar].sort((a,b) => new Date(a.date) - new Date(b.date)); sortedCal.forEach(c => { const typeBadge = c.type === 'EXAM' ? '<span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">강제 잠금</span>' : '<span class="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs">통제 해제</span>'; tbody.innerHTML += `<tr class="onnara-tr"><td class="onnara-td font-bold text-gray-700">${c.date}</td><td class="onnara-td">${typeBadge}</td><td class="onnara-td text-left font-bold text-blue-800">${c.title}</td><td class="onnara-td"><button onclick="deleteCalendar('${c.id}')" class="text-xs bg-gray-100 text-red-500 px-2 py-1 rounded font-bold border border-gray-200">삭제</button></td></tr>`; }); }
+        function renderCalendar() { const tbody = document.getElementById('calendar-list-body'); tbody.innerHTML = ''; const sortedCal = [...academicCalendar].sort((a,b) => new Date(a.date) - new Date(b.date)); sortedCal.forEach(c => { const typeBadge = c.type === 'EXAM' ? '<span class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded text-xs">강제 잠금</span>' : '<span class="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs">통제 해제</span>'; tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold text-gray-700">${c.date}</td><td class="eti-td">${typeBadge}</td><td class="eti-td text-left font-bold text-blue-800">${c.title}</td><td class="eti-td"><button onclick="deleteCalendar('${c.id}')" class="text-xs bg-gray-100 text-red-500 px-2 py-1 rounded font-bold border border-gray-200">삭제</button></td></tr>`; }); }
 
         function previewPhoto(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { base64Photo = e.target.result; document.getElementById('photo-preview-img').src = base64Photo; document.getElementById('photo-preview-img').classList.remove('hidden'); }; reader.readAsDataURL(file); }
         async function addStudentDB() { const payload = { id: document.getElementById('db-id').value, name: document.getElementById('db-name').value, studentPhone: document.getElementById('db-s-phone').value, parentPhone: document.getElementById('db-p-phone').value, grade: document.getElementById('db-grade').value, classNum: document.getElementById('db-class').value, seat: Math.floor(Math.random()*25)+1, photo: base64Photo }; if(!payload.id || !payload.name) return alert('입력 필수'); await fetch('/api/students/add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); document.getElementById('db-id').value = ''; document.getElementById('db-name').value = ''; document.getElementById('photo-preview-img').classList.add('hidden'); base64Photo = null; fetchData(); alert('등록 완료'); }
         function toggleAllChecks(source) { checkboxes = document.getElementsByName('student-check'); for(let i=0;i<checkboxes.length;i++) checkboxes[i].checked = source.checked; }
         async function applyPromotion() { const checkboxes = document.getElementsByName('student-check'); const checkedIds = []; for (let i=0; i<checkboxes.length; i++) { if (checkboxes[i].checked) checkedIds.push(checkboxes[i].value); } if (checkedIds.length === 0) return alert('체크 요망.'); const targetGrade = document.getElementById('promote-grade').value, targetClass = document.getElementById('promote-class').value; if(!targetGrade || !targetClass) return alert('학년/반 입력.'); if(confirm('이동?')) { await fetch('/api/students/promote', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ studentIds: checkedIds, targetGrade, targetClass }) }); document.getElementById('check-all').checked = false; fetchData(); } }
         async function deleteStudent(id) { if(confirm('삭제?')) { await fetch(`/api/students/${id}`, { method: 'DELETE' }); fetchData(); } }
-        function renderDBTable() { const tbody = document.getElementById('db-table-body'); tbody.innerHTML = ''; const canEdit = ['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role); studentsData.forEach(s => { const statusStr = s.status === 'online' ? '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[11px] font-bold">정상</span>' : `<span class="bg-red-50 text-red-600 px-2 py-1 rounded text-[11px] font-bold">${s.reason || '이탈'}</span>`; const photoHtml = s.photo ? `<img src="${s.photo}" class="w-8 h-10 object-cover rounded-md mx-auto">` : `<div class="w-8 h-10 bg-gray-100 rounded-md mx-auto flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-xs"></i></div>`; const checkHtml = canEdit ? `<input type="checkbox" name="student-check" value="${s.id}">` : `<input type="checkbox" disabled>`; const deleteBtn = canEdit ? `<button onclick="deleteStudent('${s.id}')" class="text-xs bg-white text-gray-500 hover:text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-lg border border-gray-200 transition"><i class="fa-solid fa-trash"></i></button>` : ''; tbody.innerHTML += `<tr class="onnara-tr"><td class="onnara-td text-center">${checkHtml}</td><td class="onnara-td text-center p-1">${photoHtml}</td><td class="onnara-td text-center font-mono text-gray-500">${s.id}</td><td class="onnara-td font-bold text-gray-800 text-center">${s.name}</td><td class="onnara-td text-center font-bold text-blue-600">${s.grade}-${s.classNum}</td><td class="onnara-td text-center text-gray-500">${s.studentPhone || '-'}</td><td class="onnara-td text-center text-gray-500">${s.parentPhone || '-'}</td><td class="onnara-td text-center">${statusStr}</td><td class="onnara-td text-center space-x-1"><button onclick="openPrintModal('${s.id}')" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg font-bold border border-blue-200 transition">발급</button>${deleteBtn}</td></tr>`; }); }
+        function renderDBTable() { const tbody = document.getElementById('db-table-body'); tbody.innerHTML = ''; const canEdit = ['PRINCIPAL', 'GRADE_HEAD'].includes(currentUser.role); studentsData.forEach(s => { const statusStr = s.status === 'online' ? '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[11px] font-bold">정상</span>' : `<span class="bg-red-50 text-red-600 px-2 py-1 rounded text-[11px] font-bold">${s.reason || '이탈'}</span>`; const photoHtml = s.photo ? `<img src="${s.photo}" class="w-8 h-10 object-cover rounded-md mx-auto">` : `<div class="w-8 h-10 bg-gray-100 rounded-md mx-auto flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-xs"></i></div>`; const checkHtml = canEdit ? `<input type="checkbox" name="student-check" value="${s.id}">` : `<input type="checkbox" disabled>`; const deleteBtn = canEdit ? `<button onclick="deleteStudent('${s.id}')" class="text-xs bg-white text-gray-500 hover:text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-lg border border-gray-200 transition"><i class="fa-solid fa-trash"></i></button>` : ''; tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td text-center">${checkHtml}</td><td class="eti-td text-center p-1">${photoHtml}</td><td class="eti-td text-center font-mono text-gray-500">${s.id}</td><td class="eti-td font-bold text-gray-800 text-center">${s.name}</td><td class="eti-td text-center font-bold text-blue-600">${s.grade}-${s.classNum}</td><td class="eti-td text-center text-gray-500">${s.studentPhone || '-'}</td><td class="eti-td text-center text-gray-500">${s.parentPhone || '-'}</td><td class="eti-td text-center">${statusStr}</td><td class="eti-td text-center space-x-1"><button onclick="openPrintModal('${s.id}')" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg font-bold border border-blue-200 transition">발급</button>${deleteBtn}</td></tr>`; }); }
         function downloadExcel() { let csvContent = "\uFEFF학번,성명,학년,반,학생연락처,학부모연락처,상태\n"; studentsData.forEach(s => { csvContent += `${s.id},${s.name},${s.grade},${s.classNum},${s.studentPhone||''},${s.parentPhone||''},${s.status}\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })); link.download = `학적DB.csv`; link.click(); }
         function openPrintModal(id) { const s = studentsData.find(st => st.id === id); document.getElementById('print-dept').innerText = `${s.grade}학년 ${s.classNum}반`; document.getElementById('print-name').innerText = s.name; document.getElementById('print-id').innerText = `ID: ${s.id}`; const imgEl = document.getElementById('print-photo'); const iconEl = document.getElementById('print-no-photo'); if(s.photo) { imgEl.src = s.photo; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); } else { imgEl.classList.add('hidden'); iconEl.classList.remove('hidden'); } document.getElementById('print-modal').classList.remove('hidden'); }
         function closePrintModal() { document.getElementById('print-modal').classList.add('hidden'); }
