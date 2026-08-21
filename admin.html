@@ -2,12 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <!-- 💡 모바일 화면 흔들림 및 줌 방지 최적화 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ETI SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        .hidden { display: none !important; }
         body { background-color: #F8FAFC; color: #334155; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; letter-spacing: -0.01em; }
         .eti-card { background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0; padding: 24px; transition: all 0.2s; }
         .lnb-item { padding: 12px 18px; margin-bottom: 6px; color: #64748B; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 12px; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
@@ -28,7 +28,6 @@
         .phone-mockup::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); z-index: 1; }
         .phone-content { position: relative; z-index: 2; }
         
-        /* 모바일 최적화 강제 적용 */
         @media (max-width: 768px) { 
             .pc-only { display: none !important; } 
             .mobile-full { width: 100% !important; padding: 12px !important; margin: 0 !important; border-radius: 0 !important; border: none !important; box-shadow: none !important; background-color: #F1F5F9;} 
@@ -39,11 +38,14 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden">
 
-    <!-- 💡 통합 로그인 & 가입 컨테이너 -->
+    <!-- 로그인 및 가입 -->
     <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0] flex items-center justify-center p-4">
-        <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl w-full max-w-[450px] max-h-[95vh] overflow-y-auto flex flex-col relative">
+        <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl w-full max-w-[450px] max-h-[95vh] overflow-y-auto flex flex-col">
+            
             <div class="flex flex-col items-center mb-6 shrink-0">
-                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-shield-cat"></i></div>
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4">
+                    <i class="fa-solid fa-shield-cat"></i>
+                </div>
                 <h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">ETI SYSTEM</h2>
             </div>
             
@@ -51,7 +53,9 @@
                 <input type="text" id="login-id" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3" placeholder="아이디">
                 <input type="password" id="login-pw" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6" placeholder="비밀번호">
                 <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md mb-4">로그인</button>
-                <div class="text-center text-sm font-bold text-gray-500">계정이 없으신가요? <span onclick="showSignup()" class="text-blue-600 cursor-pointer hover:underline">가입 / 학교 도입 신청</span></div>
+                <div class="text-center text-sm font-bold text-gray-500">계정이 없으신가요? 
+                    <span onclick="showSignup()" class="text-blue-600 cursor-pointer hover:underline">가입 / 학교 도입 신청</span>
+                </div>
                 
                 <div class="mt-6 pt-4 border-t border-gray-200 grid grid-cols-4 gap-2 text-xs">
                     <button onclick="document.getElementById('login-id').value='eti_hq'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">본사(HQ)</button>
@@ -61,14 +65,11 @@
                 </div>
             </div>
 
-            <!-- 가입 폼 -->
             <div id="signup-box" class="hidden shrink-0">
                 <div class="flex gap-2 mb-6 border-b border-gray-200 pb-2">
                     <button onclick="setSignupType('SCHOOL')" id="tab-sch" class="flex-1 pb-2 font-bold text-blue-600 border-b-2 border-blue-600">학교 신규 도입</button>
                     <button onclick="setSignupType('USER')" id="tab-usr" class="flex-1 pb-2 font-bold text-gray-400">교직원/학생 가입</button>
                 </div>
-                
-                <!-- 학교 도입 신청 폼 -->
                 <div id="form-school" class="space-y-3">
                     <input type="text" id="reg-sch-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-blue-50" placeholder="학교코드">
                     <input type="text" id="reg-sch-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학교명">
@@ -82,19 +83,15 @@
                     <input type="password" id="reg-prin-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW">
                     <button onclick="submitSchoolSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">도입 신청</button>
                 </div>
-                
-                <!-- 사용자 가입 폼 -->
                 <div id="form-user" class="hidden space-y-3">
                     <select id="reg-usr-school" class="w-full border rounded-lg px-3 py-2 text-sm bg-white"></select>
                     <select id="reg-usr-type" onchange="toggleStudentFields()" class="w-full border rounded-lg px-3 py-2 text-sm bg-white font-bold text-blue-700">
                         <option value="TEACHER">교직원 가입</option>
                         <option value="STUDENT">학생 가입</option>
                     </select>
-                    
                     <div id="teacher-fields">
                         <input type="text" id="reg-usr-teacher-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-indigo-50" placeholder="NEIS 교원번호">
                     </div>
-                    
                     <div id="student-fields" class="hidden space-y-3">
                         <input type="text" id="reg-usr-admission-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-green-50" placeholder="입학/학번">
                         <div class="flex gap-2">
@@ -102,14 +99,12 @@
                             <input type="number" id="reg-usr-class" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="반">
                         </div>
                     </div>
-                    
                     <input type="text" id="reg-usr-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="성명">
                     <input type="text" id="reg-usr-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID">
                     <input type="password" id="reg-usr-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW">
                     <button onclick="submitUserSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">신청</button>
                 </div>
-                
-                <button onclick="hideSignup()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-lg mt-3">취소 (돌아가기)</button>
+                <button onclick="hideSignup()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-lg mt-3">취소</button>
             </div>
         </div>
     </div>
@@ -131,7 +126,6 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden h-[calc(100vh-70px)] bg-[#F8FAFC]">
-        <!-- PC 좌측 메뉴 -->
         <aside id="side-menu" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10 pt-6 px-4 shadow-[4px_0_10px_rgba(0,0,0,0.01)] pc-only">
             <div onclick="switchMenu('HOME')" data-menu="HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-6 text-center text-lg"></i> 시스템 홈</div>
             
@@ -156,21 +150,18 @@
             </div>
         </aside>
 
-        <!-- 4️⃣ 메인 공간 -->
         <main class="flex-1 overflow-y-auto p-0 md:p-8 relative mobile-full">
             
             <div id="page-HOME" class="block pc-only">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-black text-gray-800">안녕하세요, <span class="text-blue-600" id="welcome-name"></span>.</h2>
                 </div>
-                
                 <div id="hq-dashboard" class="hidden grid grid-cols-2 gap-6">
                     <div class="eti-card bg-indigo-600 text-white flex flex-col justify-center items-center py-10">
                         <i class="fa-solid fa-server text-6xl mb-4 opacity-90"></i>
                         <div class="text-2xl font-black">마더서버 정상 송출 중</div>
                     </div>
                 </div>
-                
                 <div id="tenant-dashboard" class="hidden grid grid-cols-3 gap-6">
                     <div class="col-span-2 space-y-6">
                         <div id="master-time-control" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
@@ -191,7 +182,6 @@
                             <p class="text-gray-600 text-sm">교직원 출퇴근은 물리적 RFID 리더기에 태깅하여 자동 처리됩니다.</p>
                         </div>
                     </div>
-                    
                     <div id="lock-screen-preview" class="hidden flex justify-center items-center">
                         <div class="phone-mockup" id="phone-bg">
                             <div class="phone-content space-y-4">
@@ -206,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- 행정 메뉴 모음 (PC 유지) -->
+            <!-- 행정 메뉴 모음 -->
             <div id="page-SERVER_MONITOR" class="hidden space-y-6 pc-only">
                 <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-server text-indigo-600 mr-2"></i> 송출 관제탑</h2>
                 <div class="eti-card bg-gray-900 text-green-400 font-mono text-sm p-6 h-96 overflow-y-auto">
@@ -272,9 +262,8 @@
                 <div class="eti-card p-0"><table class="eti-table"><thead><tr><th class="eti-th">일자</th><th class="eti-th">속성</th><th class="eti-th">일정명</th><th class="eti-th">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table></div>
             </div>
 
-            <!-- 📌 💡 [기기 관제소 - 모바일 & 스플릿 뷰 통합 (버그 픽스)] -->
+            <!-- 📌 💡 [기기 관제소 - 모바일 & 스플릿 뷰 통합] -->
             <div id="page-MONITOR" class="hidden flex-col w-full h-full">
-                
                 <div id="mobile-nav" class="hidden items-center justify-between mb-5 pb-4 border-b-2 border-gray-200 bg-[#F1F5F9] sticky top-0 z-50 md:hidden">
                     <div id="mobile-nav-title" class="text-xl font-black text-blue-900 flex items-center gap-2"></div>
                     <button onclick="location.reload()" class="bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-xl text-xs font-black shadow-sm active:bg-gray-100 transition"><i class="fa-solid fa-power-off"></i> 종료</button>
@@ -287,7 +276,7 @@
                         <div class="flex justify-between items-center mb-4 border-b pb-3">
                             <h3 class="font-black text-xl text-gray-800 flex items-center gap-2" id="detail-title"></h3>
                             <div class="flex items-center gap-2">
-                                <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 드래그 자리변경</span>
+                                <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 학생 칸을 드래그하여 자리 변경</span>
                                 <button onclick="closeMonitorDetail()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-lg text-sm font-bold transition pc-only"><i class="fa-solid fa-arrow-left mr-1"></i> 목록으로</button>
                             </div>
                         </div>
@@ -310,17 +299,15 @@
                     <button onclick="closeStudentModal()" class="w-full bg-gray-100 text-gray-700 font-bold py-3.5 rounded-xl mt-6 active:bg-gray-200">닫기</button>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <!-- PC 플로팅 버튼 -->
+    <!-- 플로팅 리더기 -->
     <button onclick="simulateRFIDTag()" class="fixed bottom-8 right-8 bg-red-600 hover:bg-red-700 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl transition z-50 group pc-only">
         <i class="fa-solid fa-wifi"></i>
     </button>
 
     <script>
-        // 💡 안정성 100%: 줄바꿈 및 들여쓰기 완벽 복원
         const checkMobile = () => {
             return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         };
@@ -333,8 +320,6 @@
         const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
         let draggedStudentId = null; 
         let draggedFromSeat = null;
-
-        // 💡 무한 새로고침(Resize) 이벤트 완전히 삭제! (하얀 화면의 주범)
 
         function previewLogo(event) { 
             const file = event.target.files[0]; 
