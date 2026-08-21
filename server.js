@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// 로고 등 이미지 데이터를 위해 용량 제한 확대
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
@@ -15,10 +14,8 @@ app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html'))
 
 const ROLES = { SUPER_ADMIN: 'SUPER_ADMIN', PRINCIPAL: 'PRINCIPAL', GRADE_HEAD: 'GRADE_HEAD', HOMEROOM: 'HOMEROOM', SUBJECT: 'SUBJECT', STUDENT: 'STUDENT' };
 
-// 💡 1. 학교 DB (logo 필드 추가)
 let schools = [{ id: 'sch_1', schoolCode: 'B100000001', name: '한국제일고등학교', status: 'APPROVED', etiStart: "08:30", etiEnd: "16:30", logo: null }];
 
-// 💡 2. 교직원 DB (rfidCard 필드 추가 - 학생과 동일하게 카드로 출퇴근)
 let users = [
     { id: 'eti_hq', pw: '1234', role: ROLES.SUPER_ADMIN, name: 'ETI 본사 관리자', schoolId: null, status: 'APPROVED', commute: '출근', lastHeartbeat: 0, rfidCard: null },
     { id: 'master', pw: '1234', role: ROLES.PRINCIPAL, name: '이순신 교장', teacherCode: 'P00001', schoolId: 'sch_1', status: 'APPROVED', commute: '미출근', lastHeartbeat: 0, rfidCard: 't_master' },
@@ -26,19 +23,16 @@ let users = [
     { id: 'teacher1', pw: '1234', role: ROLES.HOMEROOM, grade: 1, classNum: 1, name: '1-1 담임', teacherCode: 'T10002', schoolId: 'sch_1', status: 'APPROVED', commute: '미출근', lastHeartbeat: 0, rfidCard: 't_room1' }
 ];
 
-// 💡 3. 학생 DB 
 let students = [
     { id: 'stu1', pw: '1234', admissionNumber: 'A2026001', name: '강감찬', schoolId: 'sch_1', grade: 1, classNum: 1, seat: 1, rfidCard: 's1', status: 'APPROVED', isOnline: false, reason: '', lastHeartbeat: 0 },
-    { id: 'stu2', pw: '1234', admissionNumber: 'A2026002', name: '장영실', schoolId: 'sch_1', grade: 1, classNum: 1, seat: 5, rfidCard: null, status: 'PENDING', isOnline: false, reason: '', lastHeartbeat: 0 }
+    { id: 'stu2', pw: '1234', admissionNumber: 'A2026002', name: '장영실', schoolId: 'sch_1', grade: 1, classNum: 1, seat: 5, rfidCard: 's2', status: 'APPROVED', isOnline: false, reason: '', lastHeartbeat: 0 },
+    { id: 'stu3', pw: '1234', admissionNumber: 'A2026003', name: '유관순', schoolId: 'sch_1', grade: 1, classNum: 1, seat: 24, rfidCard: 's3', status: 'APPROVED', isOnline: false, reason: '', lastHeartbeat: 0 }
 ];
 
 let timetables = { 'teacher1': { 'mon_1': '1-1', 'mon_2': '1-1', 'tue_3': '1-2' } };
 let currentSchoolPeriod = 'NONE';
 let academicCalendar = []; let approvalDocs = []; let docIdCounter = 1;
 
-// ==========================================
-// 로그인 및 통합 대시보드
-// ==========================================
 app.post('/api/login', (req, res) => {
     const { id, pw } = req.body;
     let user = users.find(u => u.id === id && u.pw === pw);
@@ -46,13 +40,8 @@ app.post('/api/login', (req, res) => {
     
     if (user) {
         if(user.status !== 'APPROVED') return res.status(403).json({ success: false, message: '가입 승인 대기 중입니다.' });
-        let schoolName = 'ETI 마더 서버';
-        let schoolLogo = null;
-        if(user.schoolId) { 
-            const school = schools.find(s => s.id === user.schoolId); 
-            if(school) { schoolName = school.name; schoolLogo = school.logo; } 
-        }
-        
+        let schoolName = 'ETI 마더 서버', schoolLogo = null;
+        if(user.schoolId) { const school = schools.find(s => s.id === user.schoolId); if(school) { schoolName = school.name; schoolLogo = school.logo; } }
         const myTeaching = timetables[user.id] || null;
         res.json({ success: true, user: { ...user, schoolName, schoolLogo, teachingMap: myTeaching } });
     } else { res.status(401).json({ success: false, message: '아이디/비밀번호 오류' }); }
@@ -67,70 +56,25 @@ app.get('/api/dashboard', (req, res) => {
 app.get('/api/schools/approved', (req, res) => { res.json({ success: true, schools: schools.filter(s => s.status === 'APPROVED') }); });
 
 // ==========================================
-// 가입 및 승인 (로고 지원)
+// 💡 [신규] 드래그 앤 드롭 자리 배치 저장 API
 // ==========================================
-app.post('/api/signup/school', (req, res) => {
-    const { schoolName, schoolCode, principalId, principalPw, principalName, schoolLogo } = req.body;
-    if(schools.find(s => s.schoolCode === schoolCode)) return res.status(400).json({ success: false, message: '이미 도입 신청된 학교코드입니다.' });
-    const newSchoolId = 'sch_' + Date.now();
-    schools.push({ id: newSchoolId, schoolCode, name: schoolName, logo: schoolLogo, status: 'PENDING' });
-    users.push({ id: principalId, pw: principalPw, role: ROLES.PRINCIPAL, name: principalName, teacherCode: 'PRINCIPAL', schoolId: newSchoolId, status: 'PENDING', commute: '미출근', lastHeartbeat: 0, rfidCard: null });
+app.post('/api/seat/update', (req, res) => {
+    const { updates } = req.body; // [{id: 'stu1', seat: 10}, {id: 'stu2', seat: 1}]
+    updates.forEach(u => {
+        const student = students.find(s => s.id === u.id);
+        if(student) student.seat = u.seat;
+    });
     res.json({ success: true });
 });
 
-app.post('/api/signup/user', (req, res) => {
-    const { type, schoolId, id, pw, name, grade, classNum, teacherCode, admissionNumber } = req.body;
-    if(users.find(u => u.id === id) || students.find(s => s.id === id)) return res.status(400).json({ success: false, message: '중복 아이디' });
-    if(type === 'TEACHER') {
-        if(users.find(u => u.teacherCode === teacherCode)) return res.status(400).json({ success: false, message: '중복 교원번호' });
-        users.push({ id, pw, role: 'TEACHER_PENDING', name, teacherCode, schoolId, status: 'PENDING', commute: '미출근', lastHeartbeat: 0, rfidCard: null });
-    } else if(type === 'STUDENT') {
-        if(students.find(s => s.admissionNumber === admissionNumber)) return res.status(400).json({ success: false, message: '중복 입학번호' });
-        students.push({ id, pw, name, admissionNumber, schoolId, grade: Number(grade), classNum: Number(classNum), seat: Math.floor(Math.random()*25)+1, rfidCard: null, status: 'PENDING', isOnline: false, reason: '', lastHeartbeat: 0 });
-    }
-    res.json({ success: true });
-});
-
+// 가입/승인/RFID/행정 유지
+app.post('/api/signup/school', (req, res) => { const { schoolName, schoolCode, principalId, principalPw, principalName, schoolLogo } = req.body; if(schools.find(s => s.schoolCode === schoolCode)) return res.status(400).json({ success: false, message: '이미 도입 신청된 학교코드입니다.' }); const newSchoolId = 'sch_' + Date.now(); schools.push({ id: newSchoolId, schoolCode, name: schoolName, logo: schoolLogo, status: 'PENDING' }); users.push({ id: principalId, pw: principalPw, role: ROLES.PRINCIPAL, name: principalName, teacherCode: 'PRINCIPAL', schoolId: newSchoolId, status: 'PENDING', commute: '미출근', lastHeartbeat: 0, rfidCard: null }); res.json({ success: true }); });
+app.post('/api/signup/user', (req, res) => { const { type, schoolId, id, pw, name, grade, classNum, teacherCode, admissionNumber } = req.body; if(users.find(u => u.id === id) || students.find(s => s.id === id)) return res.status(400).json({ success: false, message: '중복 아이디' }); if(type === 'TEACHER') { if(users.find(u => u.teacherCode === teacherCode)) return res.status(400).json({ success: false, message: '중복 교원번호' }); users.push({ id, pw, role: 'TEACHER_PENDING', name, teacherCode, schoolId, status: 'PENDING', commute: '미출근', lastHeartbeat: 0, rfidCard: null }); } else if(type === 'STUDENT') { if(students.find(s => s.admissionNumber === admissionNumber)) return res.status(400).json({ success: false, message: '중복 입학번호' }); students.push({ id, pw, name, admissionNumber, schoolId, grade: Number(grade), classNum: Number(classNum), seat: Math.floor(Math.random()*25)+1, rfidCard: null, status: 'PENDING', isOnline: false, reason: '', lastHeartbeat: 0 }); } res.json({ success: true }); });
 app.post('/api/approve/school', (req, res) => { const { schoolId } = req.body; const school = schools.find(s => s.id === schoolId); const principal = users.find(u => u.schoolId === schoolId && u.role === ROLES.PRINCIPAL); if(school) school.status = 'APPROVED'; if(principal) principal.status = 'APPROVED'; res.json({ success: true }); });
 app.post('/api/approve/teacher', (req, res) => { const { targetId, role, grade, classNum } = req.body; const teacher = users.find(u => u.id === targetId); if(teacher) { teacher.status = 'APPROVED'; teacher.role = role; if(grade) teacher.grade = Number(grade); if(classNum) teacher.classNum = Number(classNum); } res.json({ success: true }); });
 app.post('/api/approve/student', (req, res) => { const { studentId } = req.body; const student = students.find(s => s.id === studentId); if(student) student.status = 'APPROVED'; res.json({ success: true }); });
-
-// 💡 RFID 매핑 (교직원/학생 모두 지원)
-app.post('/api/rfid/map', (req, res) => { 
-    const { targetId, rfidCode, targetType } = req.body; 
-    if(targetType === 'STAFF') {
-        const staff = users.find(u => u.id === targetId);
-        if(staff) { staff.rfidCard = rfidCode; return res.json({ success: true }); }
-    } else {
-        const student = students.find(s => s.id === targetId); 
-        if(student) { student.rfidCard = rfidCode; return res.json({ success: true }); }
-    }
-    res.status(404).json({ success: false }); 
-});
-
-// ==========================================
-// 💡 [핵심] RFID 물리 리더기 태그 시뮬레이션 (출퇴근 자동화)
-// ==========================================
-app.post('/api/rfid/tag', (req, res) => {
-    const { rfidCode } = req.body;
-    // 태그된 카드가 교직원인지 확인
-    let staff = users.find(u => u.rfidCard === rfidCode && u.status === 'APPROVED');
-    if(staff) {
-        // 출근/퇴근 토글
-        staff.commute = staff.commute === '출근' ? '퇴근' : '출근';
-        return res.json({ success: true, type: 'STAFF', message: `${staff.name} 선생님 [${staff.commute}] 처리 완료` });
-    }
-    // 학생일 경우 (등하교 알림 등 추후 확장 가능)
-    let student = students.find(s => s.rfidCard === rfidCode && s.status === 'APPROVED');
-    if(student) {
-        return res.json({ success: true, type: 'STUDENT', message: `${student.name} 학생 인식 완료` });
-    }
-    res.status(404).json({ success: false, message: '등록되지 않은 RFID 카드입니다.' });
-});
-
-// ==========================================
-// 부가기능 및 앱 하트비트
-// ==========================================
+app.post('/api/rfid/map', (req, res) => { const { targetId, rfidCode, targetType } = req.body; if(targetType === 'STAFF') { const staff = users.find(u => u.id === targetId); if(staff) { staff.rfidCard = rfidCode; return res.json({ success: true }); } } else { const student = students.find(s => s.id === targetId); if(student) { student.rfidCard = rfidCode; return res.json({ success: true }); } } res.status(404).json({ success: false }); });
+app.post('/api/rfid/tag', (req, res) => { const { rfidCode } = req.body; let staff = users.find(u => u.rfidCard === rfidCode && u.status === 'APPROVED'); if(staff) { staff.commute = staff.commute === '출근' ? '퇴근' : '출근'; return res.json({ success: true, type: 'STAFF', message: `${staff.name} 선생님 [${staff.commute}] 처리 완료` }); } let student = students.find(s => s.rfidCard === rfidCode && s.status === 'APPROVED'); if(student) { return res.json({ success: true, type: 'STUDENT', message: `${student.name} 학생 인식 완료` }); } res.status(404).json({ success: false, message: '등록되지 않은 RFID 카드입니다.' }); });
 app.post('/api/approvals', (req, res) => { const { date, studentId, studentName, type, reason, requesterId, requesterName } = req.body; const targetStudent = students.find(s => s.id === studentId); const user = users.find(u => u.id === requesterId); let initialStatus = 'PENDING'; if (user && (user.role === 'PRINCIPAL' || (user.role === 'GRADE_HEAD' && user.grade === targetStudent.grade) || (user.role === 'HOMEROOM' && user.grade === targetStudent.grade && user.classNum === targetStudent.classNum))) initialStatus = 'APPROVED'; approvalDocs.push({ id: 'DOC-' + (docIdCounter++).toString().padStart(3, '0'), date, studentId, studentName, grade: targetStudent ? targetStudent.grade : 1, type, reason, requesterId, requesterName, status: initialStatus }); res.json({ success: true, status: initialStatus }); });
 app.post('/api/approvals/process', (req, res) => { const { docId, status } = req.body; const doc = approvalDocs.find(d => d.id === docId); if (doc) doc.status = status; res.json({ success: true }); });
 app.post('/api/calendar', (req, res) => { const { date, title, type } = req.body; academicCalendar.push({ id: Date.now().toString(), date, title, type }); res.json({ success: true }); });
@@ -140,7 +84,7 @@ app.post('/api/period/set', (req, res) => { currentSchoolPeriod = req.body.perio
 app.post('/api/emergency', (req, res) => { students.forEach(s => { s.isOnline = false; s.reason = '🚨긴급 재난 해제'; }); res.json({ success: true }); });
 app.post('/api/reason', (req, res) => { const { studentId, reason } = req.body; const student = students.find(s => s.id === studentId); if (student) { student.reason = reason; return res.json({ success: true }); } });
 
-// 앱 통신 엔진
+// 앱 하트비트
 app.post('/api/heartbeat', (req, res) => {
     const { id } = req.body; let command = 'unlock'; const today = new Date().toISOString().split('T')[0];
     let student = students.find(s => s.rfidCard === id && s.status === 'APPROVED'); 
