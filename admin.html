@@ -38,7 +38,7 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden">
 
-    <!-- 로그인 및 가입 -->
+    <!-- 💡 로그인 및 가입 컨테이너 -->
     <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0] flex items-center justify-center p-4">
         <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl w-full max-w-[450px] max-h-[95vh] overflow-y-auto flex flex-col">
             
@@ -49,31 +49,36 @@
                 <h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">ETI SYSTEM</h2>
             </div>
             
-            <div id="login-box" class="shrink-0">
-                <input type="text" id="login-id" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3" placeholder="아이디">
-                <input type="password" id="login-pw" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6" placeholder="비밀번호">
-                <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md mb-4">로그인</button>
-                <div class="text-center text-sm font-bold text-gray-500">계정이 없으신가요? 
-                    <span onclick="showSignup()" class="text-blue-600 cursor-pointer hover:underline">가입 / 학교 도입 신청</span>
+            <!-- 💡 뭉쳐있던 로그인 폼을 보기 좋게 풀어서 디자인 엔진 보호 -->
+            <div id="login-box" class="flex flex-col w-full shrink-0">
+                <input type="text" id="login-id" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3 block" placeholder="아이디">
+                <input type="password" id="login-pw" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6 block" placeholder="비밀번호">
+                <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md mb-4 block transition">로그인</button>
+                
+                <div class="text-center text-sm font-bold text-gray-500 w-full mb-2">
+                    계정이 없으신가요?<br class="md:hidden">
+                    <span onclick="showSignup()" class="text-blue-600 cursor-pointer hover:underline mt-2 inline-block">가입 / 학교 도입 신청</span>
                 </div>
                 
-                <div class="mt-6 pt-4 border-t border-gray-200 grid grid-cols-4 gap-2 text-xs">
-                    <button onclick="document.getElementById('login-id').value='eti_hq'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">본사(HQ)</button>
-                    <button onclick="document.getElementById('login-id').value='master'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">교장</button>
-                    <button onclick="document.getElementById('login-id').value='teacher1'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">담임</button>
-                    <button onclick="document.getElementById('login-id').value='subject1'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">교과</button>
+                <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-4 gap-2 text-xs w-full">
+                    <button onclick="document.getElementById('login-id').value='eti_hq'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-600 font-bold w-full transition">본사</button>
+                    <button onclick="document.getElementById('login-id').value='master'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-600 font-bold w-full transition">교장</button>
+                    <button onclick="document.getElementById('login-id').value='teacher1'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-600 font-bold w-full transition">담임</button>
+                    <button onclick="document.getElementById('login-id').value='subject1'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded text-gray-600 font-bold w-full transition">교과</button>
                 </div>
             </div>
 
-            <div id="signup-box" class="hidden shrink-0">
-                <div class="flex gap-2 mb-6 border-b border-gray-200 pb-2">
+            <!-- 회원가입/도입 폼 -->
+            <div id="signup-box" class="hidden flex-col w-full shrink-0">
+                <div class="flex gap-2 mb-6 border-b border-gray-200 pb-2 w-full">
                     <button onclick="setSignupType('SCHOOL')" id="tab-sch" class="flex-1 pb-2 font-bold text-blue-600 border-b-2 border-blue-600">학교 신규 도입</button>
                     <button onclick="setSignupType('USER')" id="tab-usr" class="flex-1 pb-2 font-bold text-gray-400">교직원/학생 가입</button>
                 </div>
-                <div id="form-school" class="space-y-3">
+                
+                <div id="form-school" class="flex flex-col space-y-3 w-full">
                     <input type="text" id="reg-sch-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-blue-50" placeholder="학교코드">
                     <input type="text" id="reg-sch-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학교명">
-                    <div class="border border-dashed rounded-lg p-3 text-center bg-gray-50">
+                    <div class="border border-dashed rounded-lg p-3 text-center bg-gray-50 w-full">
                         <label class="block text-xs font-bold text-gray-600 mb-2">로고 첨부</label>
                         <input type="file" id="reg-sch-logo" accept="image/*" class="text-xs w-full" onchange="previewLogo(event)">
                         <img id="logo-preview" src="" class="h-12 mt-2 mx-auto hidden object-contain">
@@ -81,20 +86,21 @@
                     <input type="text" id="reg-prin-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="교장명">
                     <input type="text" id="reg-prin-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID">
                     <input type="password" id="reg-prin-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW">
-                    <button onclick="submitSchoolSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">도입 신청</button>
+                    <button onclick="submitSchoolSignup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg mt-2 transition">도입 신청</button>
                 </div>
-                <div id="form-user" class="hidden space-y-3">
+                
+                <div id="form-user" class="hidden flex-col space-y-3 w-full">
                     <select id="reg-usr-school" class="w-full border rounded-lg px-3 py-2 text-sm bg-white"></select>
                     <select id="reg-usr-type" onchange="toggleStudentFields()" class="w-full border rounded-lg px-3 py-2 text-sm bg-white font-bold text-blue-700">
                         <option value="TEACHER">교직원 가입</option>
                         <option value="STUDENT">학생 가입</option>
                     </select>
-                    <div id="teacher-fields">
+                    <div id="teacher-fields" class="w-full">
                         <input type="text" id="reg-usr-teacher-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-indigo-50" placeholder="NEIS 교원번호">
                     </div>
-                    <div id="student-fields" class="hidden space-y-3">
+                    <div id="student-fields" class="hidden flex-col space-y-3 w-full">
                         <input type="text" id="reg-usr-admission-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-green-50" placeholder="입학/학번">
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 w-full">
                             <input type="number" id="reg-usr-grade" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학년">
                             <input type="number" id="reg-usr-class" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="반">
                         </div>
@@ -102,9 +108,10 @@
                     <input type="text" id="reg-usr-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="성명">
                     <input type="text" id="reg-usr-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID">
                     <input type="password" id="reg-usr-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW">
-                    <button onclick="submitUserSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">신청</button>
+                    <button onclick="submitUserSignup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg mt-2 transition">가입 신청</button>
                 </div>
-                <button onclick="hideSignup()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-lg mt-3">취소</button>
+                
+                <button onclick="hideSignup()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2 rounded-lg mt-3 transition">취소 (돌아가기)</button>
             </div>
         </div>
     </div>
@@ -121,11 +128,14 @@
                 <div id="profile-name" class="font-bold text-gray-800 text-sm">대기</div>
                 <div id="profile-role" class="text-[11px] text-gray-500">권한</div>
             </div>
-            <button onclick="location.reload()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <button onclick="location.reload()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden h-[calc(100vh-70px)] bg-[#F8FAFC]">
+        <!-- PC 좌측 메뉴 -->
         <aside id="side-menu" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10 pt-6 px-4 shadow-[4px_0_10px_rgba(0,0,0,0.01)] pc-only">
             <div onclick="switchMenu('HOME')" data-menu="HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-6 text-center text-lg"></i> 시스템 홈</div>
             
@@ -152,16 +162,19 @@
 
         <main class="flex-1 overflow-y-auto p-0 md:p-8 relative mobile-full">
             
+            <!-- 시스템 홈 -->
             <div id="page-HOME" class="block pc-only">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-black text-gray-800">안녕하세요, <span class="text-blue-600" id="welcome-name"></span>.</h2>
                 </div>
+                
                 <div id="hq-dashboard" class="hidden grid grid-cols-2 gap-6">
                     <div class="eti-card bg-indigo-600 text-white flex flex-col justify-center items-center py-10">
                         <i class="fa-solid fa-server text-6xl mb-4 opacity-90"></i>
                         <div class="text-2xl font-black">마더서버 정상 송출 중</div>
                     </div>
                 </div>
+                
                 <div id="tenant-dashboard" class="hidden grid grid-cols-3 gap-6">
                     <div class="col-span-2 space-y-6">
                         <div id="master-time-control" class="hidden bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
@@ -182,6 +195,7 @@
                             <p class="text-gray-600 text-sm">교직원 출퇴근은 물리적 RFID 리더기에 태깅하여 자동 처리됩니다.</p>
                         </div>
                     </div>
+                    
                     <div id="lock-screen-preview" class="hidden flex justify-center items-center">
                         <div class="phone-mockup" id="phone-bg">
                             <div class="phone-content space-y-4">
@@ -207,14 +221,17 @@
 
             <div id="page-APPROVE" class="hidden space-y-6 pc-only">
                 <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-user-check text-blue-600 mr-2"></i> 가입 승인 관리</h2>
+                
                 <div id="approve-mother-view" class="hidden eti-card">
                     <h3 class="font-bold text-lg mb-4 text-indigo-900">도입 대기 학교</h3>
                     <table class="eti-table"><thead><tr><th class="eti-th">코드</th><th class="eti-th">학교명</th><th class="eti-th">상태</th><th class="eti-th">업무</th></tr></thead><tbody id="mother-school-list"></tbody></table>
                 </div>
+                
                 <div id="approve-prin-view" class="hidden eti-card">
                     <h3 class="font-bold text-lg mb-4 text-blue-900">교직원 승인 (교장)</h3>
                     <table class="eti-table"><thead><tr><th class="eti-th">성명</th><th class="eti-th">교원번호</th><th class="eti-th w-[400px]">직책 설정 후 승인</th></tr></thead><tbody id="prin-teacher-list"></tbody></table>
                 </div>
+                
                 <div id="approve-teacher-view" class="hidden eti-card">
                     <h3 class="font-bold text-lg mb-4 text-green-900">학생 승인 (담임)</h3>
                     <table class="eti-table"><thead><tr><th class="eti-th">학년-반</th><th class="eti-th">성명</th><th class="eti-th">입학번호</th><th class="eti-th">상태</th><th class="eti-th">업무</th></tr></thead><tbody id="teacher-student-list"></tbody></table>
@@ -224,17 +241,29 @@
             <div id="page-RFID" class="hidden space-y-6 pc-only">
                 <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-id-card text-blue-600 mr-2"></i> RFID 매핑(연결)</h2>
                 <div class="eti-card flex gap-4 items-end bg-gray-50">
-                    <div class="w-32"><select id="rfid-target-type" onchange="renderRFID()" class="w-full border p-2 text-sm"><option value="STUDENT">학생</option><option value="STAFF">교직원</option></select></div>
+                    <div class="w-32">
+                        <select id="rfid-target-type" onchange="renderRFID()" class="w-full border p-2 text-sm">
+                            <option value="STUDENT">학생</option>
+                            <option value="STAFF">교직원</option>
+                        </select>
+                    </div>
                     <div class="flex-1"><select id="rfid-target-id" class="w-full border p-2 text-sm"></select></div>
                     <div class="flex-1"><input type="text" id="rfid-code" class="w-full border p-2 text-sm" placeholder="RFID 태깅"></div>
                     <button onclick="mapRFID()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold">매핑 완료</button>
                 </div>
-                <div class="eti-card p-0"><table class="eti-table"><thead><tr><th class="eti-th">구분</th><th class="eti-th">성명</th><th class="eti-th">RFID 번호</th></tr></thead><tbody id="rfid-mapped-list"></tbody></table></div>
+                <div class="eti-card p-0">
+                    <table class="eti-table"><thead><tr><th class="eti-th">구분</th><th class="eti-th">성명</th><th class="eti-th">RFID 번호</th></tr></thead><tbody id="rfid-mapped-list"></tbody></table>
+                </div>
             </div>
 
             <div id="page-TIMETABLE" class="hidden space-y-6 pc-only">
-                <div class="flex justify-between items-end mb-4"><h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-calendar-week text-blue-600 mr-2"></i> 나의 시간표 세팅</h2><button onclick="saveMyTimetable()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold">서버에 저장</button></div>
-                <div class="eti-card"><table class="eti-table border border-gray-200"><thead><tr><th class="eti-th bg-gray-100 border-r border-gray-200">교시</th><th class="eti-th">월</th><th class="eti-th">화</th><th class="eti-th">수</th><th class="eti-th">목</th><th class="eti-th">금</th></tr></thead><tbody id="timetable-body"></tbody></table></div>
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-calendar-week text-blue-600 mr-2"></i> 나의 시간표 세팅</h2>
+                    <button onclick="saveMyTimetable()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold">서버에 저장</button>
+                </div>
+                <div class="eti-card">
+                    <table class="eti-table border border-gray-200"><thead><tr><th class="eti-th bg-gray-100 border-r border-gray-200">교시</th><th class="eti-th">월</th><th class="eti-th">화</th><th class="eti-th">수</th><th class="eti-th">목</th><th class="eti-th">금</th></tr></thead><tbody id="timetable-body"></tbody></table>
+                </div>
             </div>
 
             <div id="page-APPROVAL" class="hidden space-y-6 pc-only">
@@ -247,7 +276,9 @@
                         <textarea id="ap-reason" class="w-full border rounded-lg p-2 mb-4 text-sm h-20"></textarea>
                         <button onclick="submitApproval()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold">신청하기</button>
                     </div>
-                    <div class="eti-card col-span-2"><table class="eti-table"><thead><tr><th class="eti-th">기안자</th><th class="eti-th">대상</th><th class="eti-th">사유</th><th class="eti-th">상태</th><th class="eti-th">결재</th></tr></thead><tbody id="approval-list-body"></tbody></table></div>
+                    <div class="eti-card col-span-2">
+                        <table class="eti-table"><thead><tr><th class="eti-th">기안자</th><th class="eti-th">대상</th><th class="eti-th">사유</th><th class="eti-th">상태</th><th class="eti-th">결재</th></tr></thead><tbody id="approval-list-body"></tbody></table>
+                    </div>
                 </div>
             </div>
 
@@ -259,34 +290,45 @@
                     <div><select id="cal-type" class="border p-2 rounded-lg text-sm bg-white"><option value="EXAM">시험 (잠금)</option><option value="HOLIDAY">휴일 (해제)</option></select></div>
                     <button onclick="addCalendar()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">추가</button>
                 </div>
-                <div class="eti-card p-0"><table class="eti-table"><thead><tr><th class="eti-th">일자</th><th class="eti-th">속성</th><th class="eti-th">일정명</th><th class="eti-th">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table></div>
+                <div class="eti-card p-0">
+                    <table class="eti-table"><thead><tr><th class="eti-th">일자</th><th class="eti-th">속성</th><th class="eti-th">일정명</th><th class="eti-th">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table>
+                </div>
             </div>
 
             <!-- 📌 💡 [기기 관제소 - 모바일 & 스플릿 뷰 통합] -->
             <div id="page-MONITOR" class="hidden flex-col w-full h-full">
-                <div id="mobile-nav" class="hidden items-center justify-between mb-5 pb-4 border-b-2 border-gray-200 bg-[#F1F5F9] sticky top-0 z-50 md:hidden">
+                
+                <div id="mobile-nav" class="hidden items-center justify-between mb-5 pb-4 border-b-2 border-gray-200 bg-[#F1F5F9] sticky top-0 z-50 md:hidden w-full">
                     <div id="mobile-nav-title" class="text-xl font-black text-blue-900 flex items-center gap-2"></div>
                     <button onclick="location.reload()" class="bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-xl text-xs font-black shadow-sm active:bg-gray-100 transition"><i class="fa-solid fa-power-off"></i> 종료</button>
                 </div>
 
                 <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 w-full pb-20 md:pb-0"></div>
                 
-                <div id="monitor-detail" class="hidden eti-card relative md:mt-6 mobile-full shadow-lg h-full md:h-[650px] flex-col md:flex-row gap-6">
-                    <div class="flex-1 flex flex-col h-full border-r-0 md:border-r border-gray-200 md:pr-6">
-                        <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <div id="monitor-detail" class="hidden eti-card relative md:mt-6 mobile-full shadow-lg h-full md:h-[650px] flex-col md:flex-row gap-6 w-full">
+                    
+                    <!-- 왼쪽: 교실 좌석 -->
+                    <div class="flex-1 flex flex-col h-full border-r-0 md:border-r border-gray-200 md:pr-6 w-full">
+                        <div class="flex justify-between items-center mb-4 border-b pb-3 w-full">
                             <h3 class="font-black text-xl text-gray-800 flex items-center gap-2" id="detail-title"></h3>
                             <div class="flex items-center gap-2">
-                                <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 학생 칸을 드래그하여 자리 변경</span>
+                                <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 학생 칸 드래그 자리 변경</span>
                                 <button onclick="closeMonitorDetail()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-lg text-sm font-bold transition pc-only"><i class="fa-solid fa-arrow-left mr-1"></i> 목록으로</button>
                             </div>
                         </div>
 
-                        <div class="w-full flex justify-center mb-4"><div class="bg-slate-100 text-slate-500 px-16 py-2 rounded-xl font-black text-sm border-2 border-dashed border-slate-300 w-full text-center max-w-[200px]">교 탁</div></div>
+                        <div class="w-full flex justify-center mb-4">
+                            <div class="bg-slate-100 text-slate-500 px-16 py-2 rounded-xl font-black text-sm border-2 border-dashed border-slate-300 w-full text-center max-w-[200px]">교 탁</div>
+                        </div>
                         <div id="seating-chart" class="seat-grid w-full h-full pb-20 md:pb-0"></div>
                     </div>
 
-                    <div id="pc-student-info" class="w-[300px] hidden md:flex flex-col h-full bg-gray-50 rounded-2xl border border-gray-200 p-6 items-center relative">
-                        <div class="w-full text-center mt-10 text-gray-400 font-bold"><i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><br>좌석에서 학생을 클릭하면<br>상세 정보가 표시됩니다.</div>
+                    <!-- 오른쪽: 학생 정보 패널 (PC 전용) -->
+                    <div id="pc-student-info" class="w-[300px] hidden md:flex flex-col h-full bg-gray-50 rounded-2xl border border-gray-200 p-6 items-center relative shrink-0">
+                        <div class="w-full text-center mt-10 text-gray-400 font-bold">
+                            <i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><br>
+                            좌석에서 학생을 클릭하면<br>상세 정보가 표시됩니다.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -295,19 +337,21 @@
             <div id="mobile-student-modal" class="fixed inset-0 z-[60] bg-gray-900/60 hidden flex-col justify-end md:hidden transition-opacity">
                 <div class="bg-white w-full rounded-t-3xl shadow-2xl flex flex-col p-6 pb-10" id="mobile-modal-content">
                     <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
-                    <div id="mobile-student-info"></div>
-                    <button onclick="closeStudentModal()" class="w-full bg-gray-100 text-gray-700 font-bold py-3.5 rounded-xl mt-6 active:bg-gray-200">닫기</button>
+                    <div id="mobile-student-info" class="w-full flex flex-col items-center"></div>
+                    <button onclick="closeStudentModal()" class="w-full bg-gray-100 text-gray-700 font-bold py-3.5 rounded-xl mt-6 active:bg-gray-200 transition w-full">닫기</button>
                 </div>
             </div>
+
         </main>
     </div>
 
-    <!-- 플로팅 리더기 -->
+    <!-- 플로팅 리더기 (PC 전용) -->
     <button onclick="simulateRFIDTag()" class="fixed bottom-8 right-8 bg-red-600 hover:bg-red-700 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl transition z-50 group pc-only">
         <i class="fa-solid fa-wifi"></i>
     </button>
 
     <script>
+        // 💡 안정적인 자바스크립트 구조 복원
         const checkMobile = () => {
             return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         };
@@ -335,13 +379,17 @@
 
         function showSignup() { 
             document.getElementById('login-box').classList.add('hidden'); 
+            document.getElementById('login-box').classList.remove('flex');
             document.getElementById('signup-box').classList.remove('hidden'); 
+            document.getElementById('signup-box').classList.add('flex');
             fetchApprovedSchools(); 
         }
 
         function hideSignup() { 
             document.getElementById('login-box').classList.remove('hidden'); 
+            document.getElementById('login-box').classList.add('flex');
             document.getElementById('signup-box').classList.add('hidden'); 
+            document.getElementById('signup-box').classList.remove('flex');
         }
 
         function setSignupType(type) { 
@@ -349,21 +397,27 @@
                 document.getElementById('tab-sch').classList.replace('text-gray-400', 'text-blue-600'); 
                 document.getElementById('tab-usr').classList.replace('text-blue-600', 'text-gray-400'); 
                 document.getElementById('form-school').classList.remove('hidden'); 
+                document.getElementById('form-school').classList.add('flex');
                 document.getElementById('form-user').classList.add('hidden'); 
+                document.getElementById('form-user').classList.remove('flex');
             } else { 
                 document.getElementById('tab-usr').classList.replace('text-gray-400', 'text-blue-600'); 
                 document.getElementById('tab-sch').classList.replace('text-blue-600', 'text-gray-400'); 
                 document.getElementById('form-user').classList.remove('hidden'); 
+                document.getElementById('form-user').classList.add('flex');
                 document.getElementById('form-school').classList.add('hidden'); 
+                document.getElementById('form-school').classList.remove('flex');
             } 
         }
 
         function toggleStudentFields() { 
             if(document.getElementById('reg-usr-type').value === 'STUDENT') { 
                 document.getElementById('student-fields').classList.remove('hidden'); 
+                document.getElementById('student-fields').classList.add('flex');
                 document.getElementById('teacher-fields').classList.add('hidden'); 
             } else { 
                 document.getElementById('student-fields').classList.add('hidden'); 
+                document.getElementById('student-fields').classList.remove('flex');
                 document.getElementById('teacher-fields').classList.remove('hidden'); 
             } 
         }
@@ -560,7 +614,7 @@
         }
 
         // ==========================================
-        // 📱 모바일 네비게이션
+        // 📱 모바일 네비게이션 플로우
         // ==========================================
         function initMobileFlow() {
             if(!checkMobile()) return;
@@ -588,15 +642,15 @@
 
             if(mobileState === 'HQ_HOME') {
                 navTitle.innerHTML = `<i class="fa-solid fa-server"></i> 본사 통제 타워`;
-                grid.innerHTML += `<div onclick="mobileState='HQ_APPROVE'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-indigo-600"><h3 class="text-2xl font-black text-indigo-900">학교 가입 승인</h3></div>`;
-                grid.innerHTML += `<div onclick="mobileState='HQ_SERVER'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-green-600"><h3 class="text-2xl font-black text-green-900">서버 송출 관제</h3></div>`;
+                grid.innerHTML += `<div onclick="mobileState='HQ_APPROVE'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-indigo-600 w-full"><h3 class="text-2xl font-black text-indigo-900">학교 가입 승인</h3></div>`;
+                grid.innerHTML += `<div onclick="mobileState='HQ_SERVER'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-green-600 w-full"><h3 class="text-2xl font-black text-green-900">서버 송출 관제</h3></div>`;
             } 
             else if (mobileState === 'HQ_APPROVE') {
                 navTitle.innerHTML = `<button onclick="goBackMobile()" class="text-blue-600 mr-3 px-3 py-1 bg-white rounded-lg shadow-sm border text-sm"><i class="fa-solid fa-chevron-left"></i> 뒤로</button> 학교 승인`;
                 const pending = db.schools ? db.schools.filter(s => s.status === 'PENDING') : [];
-                if(pending.length === 0) grid.innerHTML = `<div class="mobile-card text-center py-10 text-gray-500 font-bold">대기 중인 학교가 없습니다.</div>`;
+                if(pending.length === 0) grid.innerHTML = `<div class="mobile-card text-center py-10 text-gray-500 font-bold w-full">대기 중인 학교가 없습니다.</div>`;
                 else pending.forEach(s => { 
-                    grid.innerHTML += `<div class="mobile-card"><h3 class="text-xl font-black text-gray-800">${s.name}</h3><button onclick="approveSchool('${s.id}')" class="w-full bg-blue-600 active:bg-blue-800 text-white font-black py-3 rounded-xl mt-4">사용 승인 처리</button></div>`; 
+                    grid.innerHTML += `<div class="mobile-card w-full"><h3 class="text-xl font-black text-gray-800">${s.name}</h3><button onclick="approveSchool('${s.id}')" class="w-full bg-blue-600 active:bg-blue-800 text-white font-black py-3 rounded-xl mt-4">사용 승인 처리</button></div>`; 
                 });
             } 
             else if (mobileState === 'HQ_SERVER') {
@@ -606,23 +660,23 @@
             else if(mobileState === 'GRADE' && currentUser.role === 'PRINCIPAL') {
                 navTitle.innerHTML = `<i class="fa-solid fa-school"></i> 전교생 관제망`;
                 [1, 2, 3].forEach(g => { 
-                    grid.innerHTML += `<div onclick="selectGradeMobile(${g})" class="mobile-card text-center py-10 border-b-4 border-blue-600"><h3 class="text-2xl font-black text-gray-800">${g}학년 현황</h3></div>`; 
+                    grid.innerHTML += `<div onclick="selectGradeMobile(${g})" class="mobile-card text-center py-10 border-b-4 border-blue-600 w-full"><h3 class="text-2xl font-black text-gray-800">${g}학년 현황</h3></div>`; 
                 });
             } 
             else if(mobileState === 'CLASS') {
                 navTitle.innerHTML = currentUser.role === 'PRINCIPAL' ? `<button onclick="goBackMobile()" class="text-blue-600 mr-3 px-3 py-1 bg-white rounded-lg shadow-sm border text-sm"><i class="fa-solid fa-chevron-left"></i></button> ${selectedGrade}학년` : `<i class="fa-solid fa-layer-group"></i> ${selectedGrade}학년`;
                 [1, 2].forEach(c => { 
-                    grid.innerHTML += `<div onclick="openClassDetail(${selectedGrade}, ${c})" class="mobile-card text-center py-8"><h3 class="text-xl font-black text-gray-800">${selectedGrade}학년 ${c}반</h3></div>`; 
+                    grid.innerHTML += `<div onclick="openClassDetail(${selectedGrade}, ${c})" class="mobile-card text-center py-8 w-full"><h3 class="text-xl font-black text-gray-800">${selectedGrade}학년 ${c}반</h3></div>`; 
                 });
             } 
             else if(mobileState === 'MY_DASHBOARD') {
                 navTitle.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> 나의 관제망`;
                 
                 if(currentUser.role === 'HOMEROOM') { 
-                    grid.innerHTML += `<div><div class="text-xs font-black text-gray-500 mb-1 ml-2">담당 학급 (담임)</div><div onclick="openClassDetail(${currentUser.grade}, ${currentUser.classNum})" class="mobile-card border-2 border-blue-500 py-6 mb-4"><h3 class="text-xl font-black text-blue-900 text-center">${currentUser.grade}학년 ${currentUser.classNum}반</h3></div></div>`; 
+                    grid.innerHTML += `<div class="w-full"><div class="text-xs font-black text-gray-500 mb-1 ml-2">담당 학급 (담임)</div><div onclick="openClassDetail(${currentUser.grade}, ${currentUser.classNum})" class="mobile-card border-2 border-blue-500 py-6 mb-4 w-full"><h3 class="text-xl font-black text-blue-900 text-center">${currentUser.grade}학년 ${currentUser.classNum}반</h3></div></div>`; 
                 }
                 
-                grid.innerHTML += `<div><div class="text-xs font-black text-gray-500 mb-1 ml-2">현재 수업 학급</div>`;
+                grid.innerHTML += `<div class="w-full"><div class="text-xs font-black text-gray-500 mb-1 ml-2">현재 수업 학급</div>`;
                 let targetClassStr = null; 
                 if(db.currentPeriod && db.currentPeriod !== 'NONE' && db.timetables && db.timetables[currentUser.id]) { 
                     targetClassStr = db.timetables[currentUser.id][db.currentPeriod]; 
@@ -630,9 +684,9 @@
                 
                 if(targetClassStr) { 
                     const [g, c] = targetClassStr.split('-'); 
-                    grid.innerHTML += `<div onclick="openClassDetail(${g}, ${c})" class="mobile-card border-2 border-indigo-500 py-6"><h3 class="text-xl font-black text-indigo-900 text-center">${g}학년 ${c}반</h3></div></div>`; 
+                    grid.innerHTML += `<div onclick="openClassDetail(${g}, ${c})" class="mobile-card border-2 border-indigo-500 py-6 w-full"><h3 class="text-xl font-black text-indigo-900 text-center">${g}학년 ${c}반</h3></div></div>`; 
                 } else { 
-                    grid.innerHTML += `<div class="mobile-card text-center py-8"><p class="text-gray-500 text-sm font-bold">배정된 수업 없음</p></div></div>`; 
+                    grid.innerHTML += `<div class="mobile-card text-center py-8 w-full"><p class="text-gray-500 text-sm font-bold">배정된 수업 없음</p></div></div>`; 
                 }
             }
         }
@@ -656,7 +710,7 @@
         }
 
         // ==========================================
-        // 💡 3. 좌석 상세 (드래그앤드롭 / 모바일 팝업 적용)
+        // 💡 3. 좌석 상세 뷰 (드래그앤드롭 / 모바일 팝업 적용)
         // ==========================================
         function renderPCGrid() {
             const grid = document.getElementById('monitor-grid'); 
@@ -791,7 +845,7 @@
         }
 
         // ==========================================
-        // 4. 행정 및 결재 엔진 (PC전용)
+        // 4. 행정 및 결재 엔진 (PC전용 유지)
         // ==========================================
         function renderApproveList() { 
             if(currentUser.role === 'SUPER_ADMIN') { 
