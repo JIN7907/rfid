@@ -37,11 +37,13 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden">
 
-    <!-- 💡 로그인 및 가입 -->
-    <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0] flex items-center justify-center backdrop-blur-sm px-4 overflow-y-auto">
-        <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl w-full max-w-[450px] my-auto">
-            <div class="flex flex-col items-center mb-6"><div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-shield-cat"></i></div><h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">ETI SYSTEM</h2></div>
-            <div id="login-box">
+    <!-- 💡 로그인 및 가입 (모달 내부 스크롤 적용 완료) -->
+    <div id="login-container" class="fixed inset-0 z-50 bg-[#E2E8F0] flex items-center justify-center p-4">
+        <!-- 💡 짤림 방지: max-h-[95vh] 와 overflow-y-auto 를 하얀색 박스에 적용 -->
+        <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl w-full max-w-[450px] max-h-[95vh] overflow-y-auto flex flex-col">
+            <div class="flex flex-col items-center mb-6 shrink-0"><div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-shield-cat"></i></div><h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">ETI SYSTEM</h2></div>
+            
+            <div id="login-box" class="shrink-0">
                 <input type="text" id="login-id" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-3" placeholder="아이디"><input type="password" id="login-pw" class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6" placeholder="비밀번호">
                 <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md mb-4">로그인</button>
                 <div class="text-center text-sm font-bold text-gray-500">계정이 없으신가요? <span onclick="showSignup()" class="text-blue-600 cursor-pointer hover:underline">가입 / 학교 도입 신청</span></div>
@@ -52,7 +54,25 @@
                     <button onclick="document.getElementById('login-id').value='subject1'; document.getElementById('login-pw').value='1234'; doLogin()" class="bg-gray-100 p-2 rounded text-gray-600 font-bold">교과</button>
                 </div>
             </div>
-            <div id="signup-box" class="hidden"><div class="flex gap-2 mb-6 border-b border-gray-200 pb-2"><button onclick="setSignupType('SCHOOL')" id="tab-sch" class="flex-1 pb-2 font-bold text-blue-600 border-b-2 border-blue-600">학교 신규 도입</button><button onclick="setSignupType('USER')" id="tab-usr" class="flex-1 pb-2 font-bold text-gray-400">교직원/학생 가입</button></div><div id="form-school" class="space-y-3"><input type="text" id="reg-sch-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-blue-50" placeholder="학교코드"><input type="text" id="reg-sch-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학교명"><div class="border border-dashed rounded-lg p-3 text-center bg-gray-50"><label class="block text-xs font-bold text-gray-600 mb-2">로고 첨부</label><input type="file" id="reg-sch-logo" accept="image/*" class="text-xs w-full" onchange="previewLogo(event)"><img id="logo-preview" src="" class="h-12 mt-2 mx-auto hidden object-contain"></div><input type="text" id="reg-prin-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="교장명"><input type="text" id="reg-prin-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID"><input type="password" id="reg-prin-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW"><button onclick="submitSchoolSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">도입 신청</button></div><div id="form-user" class="hidden space-y-3"><select id="reg-usr-school" class="w-full border rounded-lg px-3 py-2 text-sm bg-white"></select><select id="reg-usr-type" onchange="toggleStudentFields()" class="w-full border rounded-lg px-3 py-2 text-sm bg-white font-bold text-blue-700"><option value="TEACHER">교직원 가입</option><option value="STUDENT">학생 가입</option></select><div id="teacher-fields"><input type="text" id="reg-usr-teacher-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-indigo-50" placeholder="NEIS 교원번호"></div><div id="student-fields" class="hidden space-y-3"><input type="text" id="reg-usr-admission-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-green-50" placeholder="입학/학번"><div class="flex gap-2"><input type="number" id="reg-usr-grade" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학년"><input type="number" id="reg-usr-class" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="반"></div></div><input type="text" id="reg-usr-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="성명"><input type="text" id="reg-usr-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID"><input type="password" id="reg-usr-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW"><button onclick="submitUserSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">신청</button></div><button onclick="hideSignup()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-lg mt-3">취소</button></div>
+
+            <!-- 회원가입/도입 폼 -->
+            <div id="signup-box" class="hidden shrink-0">
+                <div class="flex gap-2 mb-6 border-b border-gray-200 pb-2">
+                    <button onclick="setSignupType('SCHOOL')" id="tab-sch" class="flex-1 pb-2 font-bold text-blue-600 border-b-2 border-blue-600">학교 신규 도입</button>
+                    <button onclick="setSignupType('USER')" id="tab-usr" class="flex-1 pb-2 font-bold text-gray-400">교직원/학생 가입</button>
+                </div>
+                <div id="form-school" class="space-y-3">
+                    <input type="text" id="reg-sch-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-blue-50" placeholder="학교코드"><input type="text" id="reg-sch-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학교명"><div class="border border-dashed rounded-lg p-3 text-center bg-gray-50"><label class="block text-xs font-bold text-gray-600 mb-2">로고 첨부</label><input type="file" id="reg-sch-logo" accept="image/*" class="text-xs w-full" onchange="previewLogo(event)"><img id="logo-preview" src="" class="h-12 mt-2 mx-auto hidden object-contain"></div><input type="text" id="reg-prin-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="교장명"><input type="text" id="reg-prin-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID"><input type="password" id="reg-prin-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW"><button onclick="submitSchoolSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">도입 신청</button>
+                </div>
+                <div id="form-user" class="hidden space-y-3">
+                    <select id="reg-usr-school" class="w-full border rounded-lg px-3 py-2 text-sm bg-white"></select>
+                    <select id="reg-usr-type" onchange="toggleStudentFields()" class="w-full border rounded-lg px-3 py-2 text-sm bg-white font-bold text-blue-700"><option value="TEACHER">교직원 가입</option><option value="STUDENT">학생 가입</option></select>
+                    <div id="teacher-fields"><input type="text" id="reg-usr-teacher-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-indigo-50" placeholder="NEIS 교원번호"></div>
+                    <div id="student-fields" class="hidden space-y-3"><input type="text" id="reg-usr-admission-code" class="w-full border rounded-lg px-3 py-2 text-sm bg-green-50" placeholder="입학/학번"><div class="flex gap-2"><input type="number" id="reg-usr-grade" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="학년"><input type="number" id="reg-usr-class" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="반"></div></div>
+                    <input type="text" id="reg-usr-name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="성명"><input type="text" id="reg-usr-id" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="ID"><input type="password" id="reg-usr-pw" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="PW"><button onclick="submitUserSignup()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-2">가입 신청</button>
+                </div>
+                <button onclick="hideSignup()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-lg mt-3">취소 (돌아가기)</button>
+            </div>
         </div>
     </div>
 
@@ -63,10 +83,9 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden h-[calc(100vh-70px)] bg-[#F8FAFC]">
-        <!-- 💡 좌측 메뉴 (안전한 data-menu 속성 사용) -->
+        <!-- PC 좌측 메뉴 -->
         <aside id="side-menu" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10 pt-6 px-4 shadow-[4px_0_10px_rgba(0,0,0,0.01)] pc-only">
             <div onclick="switchMenu('HOME')" data-menu="HOME" class="lnb-item lnb-active"><i class="fa-solid fa-house w-6 text-center text-lg"></i> 시스템 홈</div>
-            
             <div id="lnb-hq" class="hidden"><div class="text-xs font-bold text-indigo-500 mb-2 pl-2 mt-4">본사 통제 타워</div><div onclick="switchMenu('APPROVE')" data-menu="APPROVE" class="lnb-item"><i class="fa-solid fa-building-circle-check w-6 text-center text-lg"></i> 학교 가입 관리</div><div onclick="switchMenu('SERVER_MONITOR')" data-menu="SERVER_MONITOR" class="lnb-item"><i class="fa-solid fa-server w-6 text-center text-lg"></i> 서버 송출 관제</div></div>
             <div id="lnb-tenant" class="hidden">
                 <div id="lnb-tenant-admin" class="hidden"><div class="text-xs font-bold text-indigo-500 mb-2 pl-2 mt-4">권한 및 보안 관리</div><div onclick="switchMenu('APPROVE')" data-menu="APPROVE" class="lnb-item"><i class="fa-solid fa-user-check w-6 text-center text-lg"></i> 교직원/학생 승인</div><div onclick="switchMenu('RFID')" data-menu="RFID" class="lnb-item"><i class="fa-solid fa-id-card w-6 text-center text-lg"></i> 실물 RFID 연동</div></div>
@@ -78,7 +97,6 @@
             </div>
         </aside>
 
-        <!-- 4️⃣ 메인 공간 -->
         <main class="flex-1 overflow-y-auto p-0 md:p-8 relative mobile-full">
             
             <div id="page-HOME" class="block pc-only">
@@ -101,28 +119,39 @@
             <div id="page-APPROVAL" class="hidden space-y-6 pc-only"><h2 class="text-[22px] font-black text-gray-800"><i class="fa-solid fa-file-signature text-blue-600 mr-2"></i> 기기 예외 전자 결재</h2><div class="grid grid-cols-3 gap-6"><div class="eti-card col-span-1 border-t-4 border-t-indigo-500"><input type="date" id="ap-date" class="w-full border rounded-lg p-2 mb-3 text-sm"><select id="ap-type" class="w-full border rounded-lg p-2 mb-3 text-sm"><option value="조퇴">조퇴</option><option value="결석">결석</option></select><select id="ap-student" class="w-full border rounded-lg p-2 mb-3 text-sm"></select><textarea id="ap-reason" class="w-full border rounded-lg p-2 mb-4 text-sm h-20"></textarea><button onclick="submitApproval()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold">신청하기</button></div><div class="eti-card col-span-2"><table class="eti-table"><thead><tr><th class="eti-th">기안자</th><th class="eti-th">대상</th><th class="eti-th">사유</th><th class="eti-th">상태</th><th class="eti-th">결재</th></tr></thead><tbody id="approval-list-body"></tbody></table></div></div></div>
             <div id="page-CALENDAR" class="hidden space-y-6 pc-only"><h2 class="text-[22px] font-black text-gray-800"><i class="fa-regular fa-calendar-check text-blue-600 mr-2"></i> 학사 캘린더</h2><div class="eti-card flex gap-6 items-end bg-blue-50 border-blue-200"><div><input type="date" id="cal-date" class="border p-2 rounded-lg text-sm w-32"></div><div><input type="text" id="cal-title" class="border p-2 rounded-lg text-sm w-48" placeholder="일정명"></div><div><select id="cal-type" class="border p-2 rounded-lg text-sm bg-white"><option value="EXAM">시험 (잠금)</option><option value="HOLIDAY">휴일 (해제)</option></select></div><button onclick="addCalendar()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">추가</button></div><div class="eti-card p-0"><table class="eti-table"><thead><tr><th class="eti-th">일자</th><th class="eti-th">속성</th><th class="eti-th">일정명</th><th class="eti-th">관리</th></tr></thead><tbody id="calendar-list-body"></tbody></table></div></div>
 
-            <!-- 📌 💡 [기기 관제소 - 모바일 & 스플릿 뷰 통합 (수정완료)] -->
+            <!-- 📌 💡 [기기 관제소 - X버튼, 뒤로가기 위치 완벽 수정본] -->
             <div id="page-MONITOR" class="hidden flex-col w-full h-full">
+                <!-- 모바일 헤더 -->
                 <div id="mobile-nav" class="hidden items-center justify-between mb-5 pb-4 border-b-2 border-gray-200 bg-[#F1F5F9] sticky top-0 z-50 md:hidden">
                     <div id="mobile-nav-title" class="text-xl font-black text-blue-900 flex items-center gap-2"></div>
-                    <button onclick="location.reload()" class="bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-xl text-xs font-black shadow-sm"><i class="fa-solid fa-power-off"></i> 종료</button>
+                    <button onclick="location.reload()" class="bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-xl text-xs font-black shadow-sm active:bg-gray-100 transition"><i class="fa-solid fa-power-off"></i> 종료</button>
                 </div>
 
+                <!-- 학급 그리드 (목록 뷰) -->
                 <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 w-full pb-20 md:pb-0"></div>
                 
+                <!-- 💡 교실 상세 뷰 (PC 스플릿 50:50) -->
                 <div id="monitor-detail" class="hidden eti-card relative md:mt-6 mobile-full shadow-lg h-full md:h-[650px] flex-col md:flex-row gap-6">
-                    <button onclick="closeMonitorDetail()" class="absolute top-4 right-4 text-gray-400 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center pc-only z-50 transition"><i class="fa-solid fa-xmark"></i></button>
                     
+                    <!-- 왼쪽: 교실 좌석 -->
                     <div class="flex-1 flex flex-col h-full border-r-0 md:border-r border-gray-200 md:pr-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-black text-lg md:text-xl text-gray-800" id="detail-title"></h3>
-                            <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 학생 칸을 드래그하여 자리배치 변경</span>
+                        <!-- 💡 상단 헤더: 뒤로가기 버튼을 제목 우측(교탁 위)으로 이동 -->
+                        <div class="flex justify-between items-center mb-4 border-b pb-3">
+                            <h3 class="font-black text-xl text-gray-800 flex items-center gap-2" id="detail-title"></h3>
+                            <div class="flex items-center gap-2">
+                                <span id="drag-hint" class="hidden text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg pc-only"><i class="fa-solid fa-hand-pointer mr-1"></i> 학생 칸을 드래그하여 자리 변경</span>
+                                <!-- PC 전용: 교실 뷰 닫기(목록으로) 버튼 -->
+                                <button onclick="closeMonitorDetail()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-lg text-sm font-bold transition pc-only"><i class="fa-solid fa-arrow-left mr-1"></i> 목록으로</button>
+                            </div>
                         </div>
+
                         <div class="w-full flex justify-center mb-4"><div class="bg-slate-100 text-slate-500 px-16 py-2 rounded-xl font-black text-sm border-2 border-dashed border-slate-300 w-full text-center max-w-[200px]">교 탁</div></div>
                         <div id="seating-chart" class="seat-grid w-full h-full pb-20 md:pb-0"></div>
                     </div>
 
-                    <div id="pc-student-info" class="w-[300px] hidden md:flex flex-col h-full bg-gray-50 rounded-2xl border border-gray-200 p-6 items-center">
+                    <!-- 오른쪽: 학생 정보 패널 (PC 전용) -->
+                    <div id="pc-student-info" class="w-[300px] hidden md:flex flex-col h-full bg-gray-50 rounded-2xl border border-gray-200 p-6 items-center relative">
+                        <!-- X버튼 중복 제거 (초기 상태) -->
                         <div class="w-full text-center mt-10 text-gray-400 font-bold"><i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><br>좌석에서 학생을 클릭하면<br>상세 정보가 표시됩니다.</div>
                     </div>
                 </div>
@@ -140,13 +169,7 @@
         </main>
     </div>
 
-    <!-- 플로팅: 시연용 물리적 RFID 리더기 -->
-    <button onclick="simulateRFIDTag()" class="fixed bottom-8 right-8 bg-red-600 hover:bg-red-700 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl transition z-50 group pc-only">
-        <i class="fa-solid fa-wifi"></i>
-    </button>
-
     <script>
-        // 💡 동적 모바일 감지 함수 (브라우저 크기 조절 대응)
         const checkMobile = () => window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         let db = { schools: [], users: [], students: [], timetables: {}, calendar: [], approvals: [], currentPeriod: 'NONE' }; 
@@ -155,21 +178,17 @@
         const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
         let draggedStudentId = null; let draggedFromSeat = null;
 
-        // 브라우저 리사이즈 시 새로고침 권장 (화면 깨짐 방지)
-        window.addEventListener('resize', () => {
-            if(currentUser && checkMobile() && !document.getElementById('mobile-nav').classList.contains('flex')) {
-                location.reload(); // PC 화면에서 모바일로 줄일 경우 재장전
-            } else if (currentUser && !checkMobile() && document.getElementById('mobile-nav').classList.contains('flex')) {
-                location.reload(); // 모바일에서 PC로 늘릴 경우 재장전
-            }
-        });
+        window.addEventListener('resize', () => { if(currentUser && checkMobile() && !document.getElementById('mobile-nav').classList.contains('flex')) { location.reload(); } else if (currentUser && !checkMobile() && document.getElementById('mobile-nav').classList.contains('flex')) { location.reload(); } });
 
+        // 가입
+        function previewLogo(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { base64Logo = e.target.result; document.getElementById('logo-preview').src = base64Logo; document.getElementById('logo-preview').classList.remove('hidden'); }; reader.readAsDataURL(file); }
         function showSignup() { document.getElementById('login-box').classList.add('hidden'); document.getElementById('signup-box').classList.remove('hidden'); fetchApprovedSchools(); }
         function hideSignup() { document.getElementById('login-box').classList.remove('hidden'); document.getElementById('signup-box').classList.add('hidden'); }
         function setSignupType(type) { if(type==='SCHOOL') { document.getElementById('tab-sch').classList.replace('text-gray-400', 'text-blue-600'); document.getElementById('tab-usr').classList.replace('text-blue-600', 'text-gray-400'); document.getElementById('form-school').classList.remove('hidden'); document.getElementById('form-user').classList.add('hidden'); } else { document.getElementById('tab-usr').classList.replace('text-gray-400', 'text-blue-600'); document.getElementById('tab-sch').classList.replace('text-blue-600', 'text-gray-400'); document.getElementById('form-user').classList.remove('hidden'); document.getElementById('form-school').classList.add('hidden'); } }
         function toggleStudentFields() { if(document.getElementById('reg-usr-type').value === 'STUDENT') { document.getElementById('student-fields').classList.remove('hidden'); document.getElementById('teacher-fields').classList.add('hidden'); } else { document.getElementById('student-fields').classList.add('hidden'); document.getElementById('teacher-fields').classList.remove('hidden'); } }
         async function fetchApprovedSchools() { const res = await fetch('/api/schools/approved'); const data = await res.json(); const sel = document.getElementById('reg-usr-school'); sel.innerHTML = '<option value="">학교 선택</option>'; data.schools.forEach(s => { sel.innerHTML += `<option value="${s.id}">${s.name}</option>`; }); }
-        function previewLogo(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { base64Logo = e.target.result; document.getElementById('logo-preview').src = base64Logo; document.getElementById('logo-preview').classList.remove('hidden'); }; reader.readAsDataURL(file); }
+        async function submitSchoolSignup() { const schoolName = document.getElementById('reg-sch-name').value; const schoolCode = document.getElementById('reg-sch-code').value; const principalName = document.getElementById('reg-prin-name').value; const principalId = document.getElementById('reg-prin-id').value; const principalPw = document.getElementById('reg-prin-pw').value; if(!schoolName || !principalId || !schoolCode || !base64Logo) return alert('입력 누락'); const res = await fetch('/api/signup/school', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ schoolName, schoolCode, principalId, principalPw, principalName, schoolLogo: base64Logo }) }); const data = await res.json(); if(data.success) { alert('신청 완료'); hideSignup(); } else alert(data.message); }
+        async function submitUserSignup() { const schoolId = document.getElementById('reg-usr-school').value; const type = document.getElementById('reg-usr-type').value; const name = document.getElementById('reg-usr-name').value; const id = document.getElementById('reg-usr-id').value; const pw = document.getElementById('reg-usr-pw').value; const grade = document.getElementById('reg-usr-grade').value; const classNum = document.getElementById('reg-usr-class').value; const teacherCode = document.getElementById('reg-usr-teacher-code').value; const admissionNumber = document.getElementById('reg-usr-admission-code').value; if(!schoolId || !id || !name) return alert('입력 누락'); const res = await fetch('/api/signup/user', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ schoolId, type, id, pw, name, grade, classNum, teacherCode, admissionNumber }) }); const data = await res.json(); if(data.success) { alert('신청 완료'); hideSignup(); } else alert(data.message); }
 
         async function doLogin() {
             const id = document.getElementById('login-id').value; const pw = document.getElementById('login-pw').value;
@@ -177,24 +196,16 @@
             const data = await res.json();
             
             if(data.success) {
-                currentUser = data.user;
-                document.getElementById('login-container').classList.add('hidden');
-                
-                await fetchFullData(); // 데이터 선제적 로딩
+                currentUser = data.user; document.getElementById('login-container').classList.add('hidden');
+                await fetchFullData(); 
                 
                 if(checkMobile()) {
-                    document.getElementById('top-header').classList.add('hidden');
-                    document.getElementById('side-menu').classList.add('hidden');
-                    ['HOME', 'APPROVE', 'RFID', 'TIMETABLE', 'APPROVAL', 'CALENDAR', 'SERVER_MONITOR'].forEach(page => { 
-                        const el = document.getElementById('page-' + page); 
-                        if(el) { el.classList.add('hidden'); el.classList.remove('flex', 'block'); }
-                    });
-                    initMobileFlow();
-                    setInterval(fetchFullData, 3000);
-                    return; 
+                    document.getElementById('top-header').classList.add('hidden'); document.getElementById('side-menu').classList.add('hidden');
+                    ['HOME', 'APPROVE', 'RFID', 'TIMETABLE', 'APPROVAL', 'CALENDAR', 'SERVER_MONITOR'].forEach(page => { const el = document.getElementById('page-' + page); if(el) { el.classList.add('hidden'); el.classList.remove('flex', 'block'); } });
+                    initMobileFlow(); setInterval(fetchFullData, 3000); return; 
                 }
 
-                // 💻 PC 초기화
+                // PC 화면
                 document.getElementById('tenant-logo').innerText = currentUser.schoolName; document.getElementById('profile-name').innerText = currentUser.name; document.getElementById('welcome-name').innerText = currentUser.name; document.getElementById('profile-role').innerText = currentUser.role==='SUBJECT'?'교사':currentUser.role;
                 if(currentUser.schoolLogo) { document.getElementById('nav-logo-icon').classList.add('hidden'); document.getElementById('nav-logo-img').src = currentUser.schoolLogo; document.getElementById('nav-logo-img').classList.remove('hidden'); document.getElementById('phone-bg').style.backgroundImage = `url('${currentUser.schoolLogo}')`; document.getElementById('preview-school-name').innerText = currentUser.schoolName; }
                 
@@ -211,22 +222,13 @@
             } else { alert(data.message); }
         }
 
-        // 💡 PC 메뉴 전환 (오류 픽스판)
         function switchMenu(pageName) {
             if(checkMobile()) return; 
-            document.querySelectorAll('.lnb-item').forEach(el => el.classList.remove('lnb-active')); 
-            document.querySelectorAll(`[data-menu="${pageName}"]`).forEach(el => el.classList.add('lnb-active'));
-            
-            ['HOME', 'APPROVE', 'RFID', 'MONITOR', 'TIMETABLE', 'APPROVAL', 'CALENDAR', 'SERVER_MONITOR'].forEach(page => { 
-                const el = document.getElementById('page-' + page); 
-                if(el) { el.classList.add('hidden'); el.classList.remove('flex', 'block'); }
-            });
+            document.querySelectorAll('.lnb-item').forEach(el => el.classList.remove('lnb-active')); document.querySelectorAll(`[data-menu="${pageName}"]`).forEach(el => el.classList.add('lnb-active'));
+            ['HOME', 'APPROVE', 'RFID', 'MONITOR', 'TIMETABLE', 'APPROVAL', 'CALENDAR', 'SERVER_MONITOR'].forEach(page => { const el = document.getElementById('page-' + page); if(el) { el.classList.add('hidden'); el.classList.remove('flex', 'block'); } });
             
             const target = document.getElementById('page-' + pageName);
-            if(target) {
-                target.classList.remove('hidden');
-                if(pageName === 'MONITOR') target.classList.add('flex'); else target.classList.add('block');
-            }
+            if(target) { target.classList.remove('hidden'); if(pageName === 'MONITOR') target.classList.add('flex'); else target.classList.add('block'); }
             
             if(pageName === 'TIMETABLE') loadMyTimetable();
             if(pageName === 'APPROVAL') { const select = document.getElementById('ap-student'); if(select) { const currentVal = select.value; select.innerHTML = '<option value="">학생 선택</option>'; db.students.filter(s=>s.schoolId === currentUser.schoolId && s.status==='APPROVED').forEach(s => { select.innerHTML += `<option value="${s.id}">${s.grade}학년 ${s.classNum}반 ${s.name}</option>`; }); if(currentVal) select.value = currentVal; } }
@@ -240,17 +242,12 @@
                     if(document.getElementById('current-status-display')) { let displayPeriod = "쉬는 시간 / 공강"; if(db.currentPeriod && db.currentPeriod !== 'NONE') { const dayStr = {'mon':'월','tue':'화','wed':'수','thu':'목','fri':'금'}[db.currentPeriod.split('_')[0]]; displayPeriod = `${dayStr}요일 ${db.currentPeriod.split('_')[1]}교시`; } document.getElementById('current-status-display').innerText = displayPeriod; }
                     if(currentUser && (currentUser.role==='SUPER_ADMIN' || currentUser.role==='PRINCIPAL' || ['HOMEROOM', 'GRADE_HEAD'].includes(currentUser.role))) renderApproveList();
                     if(currentUser && currentUser.role !== 'SUPER_ADMIN') { renderRFID(); renderApprovals(); renderCalendar(); if(document.getElementById('monitor-detail').classList.contains('hidden')) renderPCGrid(); else if(!draggedStudentId) openClassDetail(viewGrade, viewClass); }
-                } else { 
-                    if(mobileState !== 'DETAIL') renderMobileGrid(); else openClassDetail(viewGrade, viewClass);
-                }
+                } else { if(mobileState !== 'DETAIL') renderMobileGrid(); else openClassDetail(viewGrade, viewClass); }
             } catch(e) {}
         }
-        async function setSimulatedTime() { const period = document.getElementById('sim-period').value; await fetch('/api/period/set', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ period }) }); alert(`적용 완료`); fetchFullData(); }
-        async function simulateRFIDTag() { const rfidCode = prompt('모의 태깅 (예: t_master, s1):'); if(rfidCode) { await fetch('/api/rfid/tag', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ rfidCode }) }); fetchFullData(); } }
+        async function setSimulatedTime() { const period = document.getElementById('sim-period').value; await fetch('/api/period/set', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ period }) }); fetchFullData(); }
 
-        // ==========================================
-        // 📱 모바일 네비게이션 엔진
-        // ==========================================
+        // 모바일 플로우
         function initMobileFlow() {
             if(!checkMobile()) return;
             document.getElementById('page-MONITOR').classList.remove('hidden'); document.getElementById('page-MONITOR').classList.add('flex'); document.getElementById('mobile-nav').classList.remove('hidden'); document.getElementById('mobile-nav').classList.add('flex');
@@ -265,16 +262,16 @@
 
             if(mobileState === 'HQ_HOME') {
                 navTitle.innerHTML = `<i class="fa-solid fa-server"></i> 본사 통제 타워`;
-                grid.innerHTML += `<div onclick="mobileState='HQ_APPROVE'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-indigo-600"><h3 class="text-2xl font-black text-indigo-900"><i class="fa-solid fa-building-circle-check"></i> 학교 가입 승인</h3></div>`;
-                grid.innerHTML += `<div onclick="mobileState='HQ_SERVER'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-green-600"><h3 class="text-2xl font-black text-green-900"><i class="fa-solid fa-server"></i> 서버 송출 관제</h3></div>`;
+                grid.innerHTML += `<div onclick="mobileState='HQ_APPROVE'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-indigo-600"><h3 class="text-2xl font-black text-indigo-900">학교 가입 승인</h3></div>`;
+                grid.innerHTML += `<div onclick="mobileState='HQ_SERVER'; renderMobileGrid();" class="mobile-card text-center py-10 border-b-4 border-green-600"><h3 class="text-2xl font-black text-green-900">서버 송출 관제</h3></div>`;
             } else if (mobileState === 'HQ_APPROVE') {
                 navTitle.innerHTML = `<button onclick="goBackMobile()" class="text-blue-600 mr-3 px-3 py-1 bg-white rounded-lg shadow-sm border text-sm"><i class="fa-solid fa-chevron-left"></i> 뒤로</button> 학교 승인`;
                 const pending = db.schools ? db.schools.filter(s => s.status === 'PENDING') : [];
                 if(pending.length === 0) grid.innerHTML = `<div class="mobile-card text-center py-10 text-gray-500 font-bold">대기 중인 학교가 없습니다.</div>`;
-                else pending.forEach(s => { grid.innerHTML += `<div class="mobile-card"><h3 class="text-xl font-black text-gray-800">${s.name}</h3><button onclick="approveSchool('${s.id}')" class="w-full bg-blue-600 active:bg-blue-800 text-white font-black py-3 rounded-xl mt-4">사용 승인 처리</button></div>`; });
+                else pending.forEach(s => { grid.innerHTML += `<div class="mobile-card"><h3 class="text-xl font-black text-gray-800">${s.name}</h3><button onclick="approveSchool('${s.id}')" class="w-full bg-blue-600 text-white font-black py-3 rounded-xl mt-4">사용 승인 처리</button></div>`; });
             } else if (mobileState === 'HQ_SERVER') {
                 navTitle.innerHTML = `<button onclick="goBackMobile()" class="text-blue-600 mr-3 px-3 py-1 bg-white rounded-lg shadow-sm border text-sm"><i class="fa-solid fa-chevron-left"></i> 뒤로</button> 서버 로그`;
-                grid.innerHTML = `<div class="bg-gray-900 text-green-400 font-mono text-[12px] p-5 rounded-2xl h-[500px] overflow-y-auto w-full leading-relaxed shadow-inner"><div>[SYS] ETI Mother Server Boot... OK</div><div>[LOG] Heartbeat Synced</div></div>`;
+                grid.innerHTML = `<div class="bg-gray-900 text-green-400 font-mono text-[12px] p-5 rounded-2xl h-[500px] overflow-y-auto w-full"><div>[SYS] Mother Server Boot... OK</div><div class="text-blue-400 mt-3">[LOG] Heartbeat Synced</div></div>`;
             } else if(mobileState === 'GRADE' && currentUser.role === 'PRINCIPAL') {
                 navTitle.innerHTML = `<i class="fa-solid fa-school"></i> 전교생 관제망`;
                 [1, 2, 3].forEach(g => { grid.innerHTML += `<div onclick="selectGradeMobile(${g})" class="mobile-card text-center py-10 border-b-4 border-blue-600"><h3 class="text-2xl font-black text-gray-800">${g}학년 현황</h3></div>`; });
@@ -293,14 +290,14 @@
         function selectGradeMobile(g) { selectedGrade = g; mobileState = 'CLASS'; renderMobileGrid(); }
         function goBackMobile() { if(mobileState === 'DETAIL') { if(currentUser.role === 'PRINCIPAL' || currentUser.role === 'GRADE_HEAD') mobileState = 'CLASS'; else mobileState = 'MY_DASHBOARD'; renderMobileGrid(); } else if (mobileState === 'CLASS' && currentUser.role === 'PRINCIPAL') { mobileState = 'GRADE'; renderMobileGrid(); } else if (mobileState === 'HQ_APPROVE' || mobileState === 'HQ_SERVER') { mobileState = 'HQ_HOME'; renderMobileGrid(); } }
 
-        // ==========================================
-        // 💡 3. 좌석 상세 뷰 (드래그앤드롭 / 모바일 팝업 적용)
-        // ==========================================
         function renderPCGrid() {
             const grid = document.getElementById('monitor-grid'); grid.innerHTML = '';
             [1, 2].forEach(g => { [1, 2].forEach(c => { let isWarning = true; for(const tId in db.timetables) { if(db.currentPeriod && db.timetables[tId][db.currentPeriod] === `${g}-${c}`) { isWarning = false; break; } } const borderClass = isWarning ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white hover:shadow-md'; grid.innerHTML += `<div onclick="openClassDetail(${g}, ${c})" class="eti-card ${borderClass} p-5 cursor-pointer"><div class="flex justify-between items-center mb-3"><h3 class="text-lg font-black text-gray-800">${g}학년 ${c}반</h3>${isWarning ? '<span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">공강</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">수업 중</span>'}</div></div>`; });});
         }
 
+        // ==========================================
+        // 💡 3. 좌석 상세 (드래그앤드롭 + 닫기버튼 수정)
+        // ==========================================
         function openClassDetail(g, c) {
             viewGrade = g; viewClass = c; 
             if(checkMobile()) { mobileState = 'DETAIL'; document.getElementById('monitor-grid').classList.add('hidden'); document.getElementById('mobile-nav-title').innerHTML = `<button onclick="goBackMobile()" class="text-blue-600 mr-3 px-3 py-1 bg-white rounded-lg shadow-sm border text-sm"><i class="fa-solid fa-chevron-left"></i> 목록</button>`; } 
@@ -333,9 +330,11 @@
                 slotHtml += `</div>`; grid.innerHTML += slotHtml;
             }
         }
-        
-        // 💡 닫기 버튼 버그 수정판 (패널 분리)
+
+        // 💡 PC 교실 뷰 닫기 (목록으로)
         function closeMonitorDetail() { document.getElementById('monitor-detail').classList.add('hidden'); document.getElementById('monitor-detail').classList.remove('flex'); document.getElementById('monitor-grid').classList.remove('hidden'); document.getElementById('pc-student-info').innerHTML = `<div class="w-full text-center mt-10 text-gray-400 font-bold"><i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><br>학생 칸을 클릭하세요.</div>`; }
+        
+        // 💡 PC 우측 패널만 닫기 (X버튼)
         function closePCStudentInfo() { document.getElementById('pc-student-info').innerHTML = `<div class="w-full text-center mt-10 text-gray-400 font-bold"><i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><br>학생 칸을 클릭하세요.</div>`; }
 
         function allowDrop(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
@@ -353,17 +352,19 @@
             draggedStudentId = null;
         }
 
+        // 💡 학생 정보 렌더링 (PC 패널 & 모바일 팝업)
         function showStudentInfo(studentId) {
             const student = db.students.find(s => s.id === studentId); if(!student) return;
             const isOnline = student.isOnline; const isEmergency = student.reason.includes('✅') || student.reason.includes('🚨') || student.reason.includes('📅');
             let statusBadge = isOnline ? `<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-black shadow-sm"><i class="fa-solid fa-lock"></i> 통제 가동 중</span>` : `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-black shadow-sm">통신 끊김 (이탈)</span>`;
             if(isEmergency) statusBadge = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-black shadow-sm"><i class="fa-solid fa-unlock"></i> 통제 해제 상태</span>`;
 
+            // 💡 PC 우측 패널에만 X버튼(자체 닫기)을 띄움
             const infoHtml = `<div class="flex flex-col items-center w-full relative">
-                    ${!checkMobile() ? `<button onclick="closePCStudentInfo()" class="absolute top-0 right-0 text-gray-400 hover:text-gray-700 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                    ${!checkMobile() ? `<button onclick="closePCStudentInfo()" class="absolute -top-2 -right-2 text-gray-400 hover:text-gray-700 bg-white border border-gray-200 shadow-sm rounded-full w-8 h-8 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>` : ''}
                     <div class="w-20 h-20 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-4xl text-gray-400 shadow-inner mt-4 md:mt-0"><i class="fa-solid fa-user"></i></div>
                     <h4 class="text-2xl font-black text-gray-800 mb-1">${student.name}</h4><p class="text-sm font-bold text-gray-500 mb-4">${student.grade}학년 ${student.classNum}반 | 좌석 ${student.seat}번</p>${statusBadge}
-                    <div class="w-full bg-white border border-gray-200 rounded-xl p-4 mt-6 shadow-sm"><div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-100"><span class="text-xs font-bold text-gray-400">현재 사유</span><span class="text-sm font-black text-gray-800">${student.reason || '정상 (특이사항 없음)'}</span></div><div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-100"><span class="text-xs font-bold text-gray-400">RFID 카드</span><span class="text-sm font-mono font-bold text-blue-600">${student.rfidCard}</span></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-gray-400">입학번호</span><span class="text-sm font-mono font-bold text-gray-600">${student.admissionNumber}</span></div></div>
+                    <div class="w-full bg-white border border-gray-200 rounded-xl p-4 mt-6 shadow-sm"><div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-100"><span class="text-xs font-bold text-gray-400">현재 사유</span><span class="text-sm font-black text-gray-800">${student.reason || '정상'}</span></div><div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-100"><span class="text-xs font-bold text-gray-400">RFID 카드</span><span class="text-sm font-mono font-bold text-blue-600">${student.rfidCard}</span></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-gray-400">입학번호</span><span class="text-sm font-mono font-bold text-gray-600">${student.admissionNumber}</span></div></div>
                 </div>`;
 
             if(checkMobile()) { document.getElementById('mobile-student-info').innerHTML = infoHtml; document.getElementById('mobile-student-modal').classList.remove('hidden'); document.getElementById('mobile-student-modal').classList.add('flex'); } 
@@ -371,8 +372,8 @@
         }
         function closeStudentModal() { document.getElementById('mobile-student-modal').classList.add('hidden'); document.getElementById('mobile-student-modal').classList.remove('flex'); }
 
-        // 기타 행정 함수 (유지)
-        function renderApproveList() { if(currentUser.role === 'SUPER_ADMIN') { const tbody = document.getElementById('mother-school-list'); tbody.innerHTML = ''; db.schools.filter(s => s.status === 'PENDING').forEach(s => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-mono font-bold text-blue-600">${s.schoolCode}</td><td class="eti-td font-bold">${s.name}</td><td class="eti-td"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">도입 대기</span></td><td class="eti-td"><button onclick="approveSchool('${s.id}')" class="bg-blue-600 text-white px-3 py-1 rounded shadow text-xs font-bold">사용 승인</button></td></tr>`; }); } if(currentUser.role === 'PRINCIPAL') { const tbody = document.getElementById('prin-teacher-list'); tbody.innerHTML = ''; db.users.filter(u => u.schoolId === currentUser.schoolId && u.status === 'PENDING').forEach(u => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${u.name}</td><td class="eti-td font-mono text-gray-500">${u.teacherCode||u.id}</td><td class="eti-td"><div class="flex items-center justify-center gap-2"><select id="role_${u.id}" class="border p-1 text-xs rounded"><option value="HOMEROOM">담임 교사</option><option value="SUBJECT">교과/보건 교사</option><option value="GRADE_HEAD">학년 부장</option></select><input type="number" id="g_${u.id}" class="border p-1 w-12 text-xs text-center rounded" placeholder="학년"><input type="number" id="c_${u.id}" class="border p-1 w-12 text-xs text-center rounded" placeholder="반"><button onclick="approveTeacher('${u.id}')" class="bg-indigo-600 text-white px-3 py-1 rounded shadow text-xs font-bold">승인</button></div></td></tr>`; }); } if(['HOMEROOM', 'GRADE_HEAD'].includes(currentUser.role)) { const tbody = document.getElementById('teacher-student-list'); tbody.innerHTML = ''; db.students.filter(s => s.schoolId === currentUser.schoolId && s.status === 'PENDING').forEach(s => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${s.grade}-${s.classNum}</td><td class="eti-td font-bold">${s.name}</td><td class="eti-td text-blue-600 font-bold font-mono">${s.admissionNumber||s.id}</td><td class="eti-td"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">승인 대기</span></td><td class="eti-td"><button onclick="approveStudent('${s.id}')" class="bg-green-600 text-white px-3 py-1 rounded shadow text-xs font-bold">승인</button></td></tr>`; }); } }
+        // 행정 함수 유지
+        function renderApproveList() { if(currentUser.role === 'SUPER_ADMIN') { const tbody = document.getElementById('mother-school-list'); tbody.innerHTML = ''; db.schools.filter(s => s.status === 'PENDING').forEach(s => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-mono font-bold text-blue-600">${s.schoolCode}</td><td class="eti-td font-bold">${s.name}</td><td class="eti-td"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">도입 대기</span></td><td class="eti-td"><button onclick="approveSchool('${s.id}')" class="bg-blue-600 text-white px-3 py-1 rounded shadow text-xs font-bold">승인</button></td></tr>`; }); } if(currentUser.role === 'PRINCIPAL') { const tbody = document.getElementById('prin-teacher-list'); tbody.innerHTML = ''; db.users.filter(u => u.schoolId === currentUser.schoolId && u.status === 'PENDING').forEach(u => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${u.name}</td><td class="eti-td font-mono text-gray-500">${u.teacherCode||u.id}</td><td class="eti-td"><div class="flex items-center justify-center gap-2"><select id="role_${u.id}" class="border p-1 text-xs rounded"><option value="HOMEROOM">담임 교사</option><option value="SUBJECT">교과/보건</option><option value="GRADE_HEAD">학년 부장</option></select><input type="number" id="g_${u.id}" class="border p-1 w-12 text-xs text-center rounded" placeholder="학년"><input type="number" id="c_${u.id}" class="border p-1 w-12 text-xs text-center rounded" placeholder="반"><button onclick="approveTeacher('${u.id}')" class="bg-indigo-600 text-white px-3 py-1 rounded shadow text-xs font-bold">승인</button></div></td></tr>`; }); } if(['HOMEROOM', 'GRADE_HEAD'].includes(currentUser.role)) { const tbody = document.getElementById('teacher-student-list'); tbody.innerHTML = ''; db.students.filter(s => s.schoolId === currentUser.schoolId && s.status === 'PENDING').forEach(s => { tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${s.grade}-${s.classNum}</td><td class="eti-td font-bold">${s.name}</td><td class="eti-td text-blue-600 font-bold font-mono">${s.admissionNumber||s.id}</td><td class="eti-td"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">대기</span></td><td class="eti-td"><button onclick="approveStudent('${s.id}')" class="bg-green-600 text-white px-3 py-1 rounded shadow text-xs font-bold">승인</button></td></tr>`; }); } }
         async function approveSchool(schoolId) { await fetch('/api/approve/school', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ schoolId }) }); fetchFullData(); }
         async function approveTeacher(targetId) { const role = document.getElementById(`role_${targetId}`).value; const grade = document.getElementById(`g_${targetId}`).value; const classNum = document.getElementById(`c_${targetId}`).value; await fetch('/api/approve/teacher', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ targetId, role, grade, classNum }) }); fetchFullData(); }
         async function approveStudent(studentId) { await fetch('/api/approve/student', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ studentId }) }); fetchFullData(); }
@@ -382,7 +383,7 @@
         function loadMyTimetable() { const mySchedule = db.timetables[currentUser.id] || {}; for(let i=1; i<=7; i++) { days.forEach(d => { const key = `${d}_${i}`; const el = document.getElementById(`tt_${key}`); if(el) el.value = mySchedule[key] || ''; }); } }
         async function saveMyTimetable() { const schedule = {}; for(let i=1; i<=7; i++) { days.forEach(d => { const key = `${d}_${i}`; const val = document.getElementById(`tt_${key}`).value.trim(); if(val) schedule[key] = val; }); } await fetch('/api/timetable', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ staffId: currentUser.id, schedule }) }); alert('저장 완료'); fetchFullData(); }
         async function submitApproval() { const date = document.getElementById('ap-date').value; const studentId = document.getElementById('ap-student').value; const type = document.getElementById('ap-type').value; const reason = document.getElementById('ap-reason').value; if(!date || !studentId || !reason) return; const targetStudent = db.students.find(s => s.id === studentId); await fetch('/api/approvals', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, studentId, studentName: targetStudent.name, type, reason, requesterId: currentUser.id, requesterName: currentUser.name }) }); alert('처리 완료'); document.getElementById('ap-reason').value = ''; fetchFullData(); }
-        async function processApproval(docId, status) { if(confirm('진행하시겠습니까?')) { await fetch('/api/approvals/process', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ docId, status }) }); fetchFullData(); } }
+        async function processApproval(docId, status) { if(confirm('진행?')) { await fetch('/api/approvals/process', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ docId, status }) }); fetchFullData(); } }
         function renderApprovals() { const tbody = document.getElementById('approval-list-body'); tbody.innerHTML = ''; db.approvals.forEach(d => { let statusBadge = ''; let actionBtn = ''; if(d.status === 'PENDING') { statusBadge = '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">대기</span>'; if((currentUser.role === 'GRADE_HEAD' && currentUser.grade === d.grade) || currentUser.role === 'PRINCIPAL') { actionBtn = `<button onclick="processApproval('${d.id}', 'APPROVED')" class="bg-blue-600 text-white px-2 rounded">승인</button>`; } else { actionBtn = '-'; } } else if(d.status === 'APPROVED') { statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">승인됨</span>'; actionBtn = '-'; } else { statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">반려</span>'; actionBtn = '-'; } tbody.innerHTML += `<tr class="eti-tr"><td class="eti-td font-bold">${d.requesterName}</td><td class="eti-td">${d.studentName}</td><td class="eti-td text-left">${d.reason}</td><td class="eti-td">${statusBadge}</td><td class="eti-td">${actionBtn}</td></tr>`; }); }
         async function addCalendar() { const date = document.getElementById('cal-date').value; const title = document.getElementById('cal-title').value; const type = document.getElementById('cal-type').value; if(!date||!title) return; await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, title, type }) }); fetchFullData(); }
         async function deleteCalendar(id) { if(confirm('삭제?')) { await fetch(`/api/calendar/${id}`, { method: 'DELETE' }); fetchFullData(); } }
